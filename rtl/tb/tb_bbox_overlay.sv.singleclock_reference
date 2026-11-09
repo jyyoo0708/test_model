@@ -1,0 +1,128 @@
+`timescale 1ns/1ps
+module tb_bbox_overlay;
+reg clk=0;
+always #5 clk=~clk;
+reg rst_n=0;
+reg i_result_valid=0;
+reg [11:0] i_result_index=0;
+reg [7:0] i_result_data=0;
+reg i_result_done=0;
+reg i_lut_we=0;
+reg [10:0] i_lut_addr=0;
+reg [15:0] i_lut_data=0;
+reg i_cfg_we=0;
+reg [7:0] i_cfg_addr=0;
+reg [31:0] i_cfg_wdata=0;
+wire [31:0] o_cfg_rdata;
+reg i_vsync=0,i_hsync=0;
+reg [23:0] i_rgb=24'h123456;
+wire o_vsync,o_hsync,o_busy,o_box_valid,o_boxes_done;
+wire [23:0] o_rgb;
+wire [6:0] o_box_x1,o_box_y1,o_box_x2,o_box_y2;
+wire [15:0] o_box_score;
+integer box_count=0;
+integer generation=0;
+bbox_overlay dut(.*);
+
+task tick;
+    begin @(posedge clk); #1; end
+endtask
+task drive_frame(input integer expected_boxes);
+    integer x,y;
+    reg hit;
+    begin
+        @(negedge clk); i_vsync=1; i_hsync=0;
+        tick;
+        for(y=0;y<96;y=y+1) begin
+            for(x=0;x<96;x=x+1) begin
+                @(negedge clk); i_hsync=1;
+                tick;
+                hit=0;
+                if(expected_boxes!=0) begin
+                    hit=((x>=34)&&(x<=65)&&(y>=26)&&(y<=73)&&((x==34)||(x==65)||(y==26)||(y==73))) ||
+                        ((x>=0)&&(x<=29)&&(y>=2)&&(y<=49)&&((x==0)||(x==29)||(y==2)||(y==49)));
+                end
+                if(!o_vsync || !o_hsync || (o_rgb !== (hit ? 24'hff0000 : 24'h123456)))
+                    $fatal(1,"pixel mismatch x%0d y%0d rgb%h hit%0d",x,y,o_rgb,hit);
+            end
+            @(negedge clk); i_hsync=0;
+            tick;
+        end
+        @(negedge clk); i_vsync=0;
+        tick;
+    end
+endtask
+task send_result;
+    integer k;
+    begin
+        for(k=0;k<3456;k=k+1) begin
+            @(negedge clk);
+            i_result_valid=1;
+            i_result_index=12'(k);
+            i_result_data=0;
+            if(k==12*24+12) i_result_data=1;
+            if(k==12*24+14) i_result_data=2;
+            if(k==6*24+3) i_result_data=3;
+            i_result_done=(k==3455);
+        end
+        @(negedge clk); i_result_valid=0; i_result_done=0;
+    end
+endtask
+always @(posedge clk) begin
+    #1;
+    if(o_box_valid) begin
+        if(generation!=0) $fatal(1,"expected empty result");
+        if(box_count==0 && {o_box_x1,o_box_y1,o_box_x2,o_box_y2} !== {7'd34,7'd26,7'd65,7'd73})
+            $fatal(1,"first box mismatch %d %d %d %d",o_box_x1,o_box_y1,o_box_x2,o_box_y2);
+        if(box_count==1 && {o_box_x1,o_box_y1,o_box_x2,o_box_y2} !== {7'd0,7'd2,7'd29,7'd49})
+            $fatal(1,"second box mismatch %d %d %d %d",o_box_x1,o_box_y1,o_box_x2,o_box_y2);
+        if(box_count>1) $fatal(1,"NMS failed");
+        box_count=box_count+1;
+    end
+end
+integer a,c;
+initial begin
+    $dumpfile("rtl/build/tb_bbox_overlay.vcd");
+    if($test$plusargs("waves")) $dumpvars(0,tb_bbox_overlay);
+    repeat(3) tick;
+    @(negedge clk); rst_n=1;
+    tick;
+    if(o_busy) $fatal(1,"busy after reset");
+    if(o_cfg_rdata!=21299) $fatal(1,"threshold default");
+    for(a=0;a<1536;a=a+1) begin
+        @(negedge clk); i_lut_we=1; i_lut_addr=11'(a);
+        c=a/256;
+        case(c)
+            0: begin
+                i_lut_data=0;
+                if(a%256==1) i_lut_data=60000;
+                if(a%256==2) i_lut_data=50000;
+                if(a%256==3) i_lut_data=45000;
+            end
+            1,2,4: i_lut_data=32768;
+            3: i_lut_data=21845;
+            5: i_lut_data=65535;
+            default: i_lut_data=0;
+        endcase
+    end
+    @(negedge clk); i_lut_we=0;
+    drive_frame(0);
+    send_result;
+    wait(o_boxes_done); #2;
+    if(box_count!=2) $fatal(1,"expected two boxes got %0d",box_count);
+    if(!o_busy) $fatal(1,"pending publication must remain busy");
+    drive_frame(2);
+    if(o_busy) $fatal(1,"publication did not clear busy");
+    generation=1;
+    @(negedge clk); i_cfg_we=1; i_cfg_addr=0; i_cfg_wdata=65535;
+    tick;
+    @(negedge clk); i_cfg_we=0;
+    if(o_cfg_rdata!=65535) $fatal(1,"threshold readback");
+    send_result;
+    wait(o_boxes_done); #2;
+    drive_frame(0);
+    $display("PASS bbox_overlay: peaks, score, top candidates, NMS, threshold, empty result, atomic publication, all 27648 RGB pixels");
+    $finish;
+end
+initial begin #2000000; $fatal(1,"timeout"); end
+endmodule

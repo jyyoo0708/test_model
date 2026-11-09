@@ -1,0 +1,35 @@
+{
+  "view_collisions": [
+    {
+      "dx": 0,
+      "dy": 0,
+      "normal": 77,
+      "flipped": 76
+    },
+    {
+      "dx": 4,
+      "dy": 0,
+      "normal": 77,
+      "flipped": 76
+    },
+    {
+      "dx": -4,
+      "dy": 0,
+      "normal": 77,
+      "flipped": 76
+    },
+    {
+      "dx": 0,
+      "dy": 4,
+      "normal": 77,
+      "flipped": 76
+    },
+    {
+      "dx": 0,
+      "dy": -4,
+      "normal": 77,
+      "flipped": 76
+    }
+  ],
+  "train_original_people": 7972
+}

@@ -1,0 +1,21 @@
+{
+  "model": "models/student_kd/model_float32.ts",
+  "threshold": 0.32500000000000007,
+  "input_size": 96,
+  "padding": 114,
+  "channels": [
+    "heatmap",
+    "offset_x",
+    "offset_y",
+    "width",
+    "height",
+    "quality"
+  ],
+  "offset": "2*sigmoid-.5",
+  "size": "sigmoid*96",
+  "score": "sigmoid(heatmap)*sqrt(sigmoid(quality))",
+  "nms_iou": 0.5,
+  "topk": 50,
+  "min_width": 8,
+  "min_height": 24
+}

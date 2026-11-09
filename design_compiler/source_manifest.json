@@ -1,0 +1,26 @@
+{
+  "top": "person_detector_top",
+  "clock_hz": 27000000,
+  "sources": [
+    {
+      "source": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/advance_network/rtl/dvp_capture.v",
+      "snapshot": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/advance_network/design_compiler/rtl_snapshot/dvp_capture.v",
+      "sha256": "027868229c0b43a7f2e54da42c63ad59e2df16a514471705c9b899c885a964e8"
+    },
+    {
+      "source": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/advance_network/rtl/npu_core.v",
+      "snapshot": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/advance_network/design_compiler/rtl_snapshot/npu_core.v",
+      "sha256": "815d723f54cd00995139f219f0a3da4eed69c1e0a65de5bafc104b67d9a9c360"
+    },
+    {
+      "source": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/advance_network/rtl/bbox_overlay.v",
+      "snapshot": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/advance_network/design_compiler/rtl_snapshot/bbox_overlay.v",
+      "sha256": "7671fd5f3ba4ed4865ef4a0f7b4855fa056e4350864f3524efe1f4e4a65d5852"
+    },
+    {
+      "source": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/advance_network/rtl/person_detector_top.v",
+      "snapshot": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/advance_network/design_compiler/rtl_snapshot/person_detector_top.v",
+      "sha256": "04c9bdd180cd170ade292230eb5123cc5543d2244321d1f2310fd0b438bb04cc"
+    }
+  ]
+}

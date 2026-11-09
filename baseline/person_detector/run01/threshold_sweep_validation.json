@@ -1,0 +1,172 @@
+[
+  {
+    "threshold": 0.01,
+    "detection_f1": 0.1154219204655674,
+    "presence_accuracy": 0.5812356979405034
+  },
+  {
+    "threshold": 0.05,
+    "detection_f1": 0.27769985974754563,
+    "presence_accuracy": 0.5812356979405034
+  },
+  {
+    "threshold": 0.07500000000000001,
+    "detection_f1": 0.3002789753994421,
+    "presence_accuracy": 0.5812356979405034
+  },
+  {
+    "threshold": 0.10000000000000002,
+    "detection_f1": 0.32135076252723316,
+    "presence_accuracy": 0.5835240274599542
+  },
+  {
+    "threshold": 0.12500000000000003,
+    "detection_f1": 0.3382057896245343,
+    "presence_accuracy": 0.5926773455377574
+  },
+  {
+    "threshold": 0.15000000000000002,
+    "detection_f1": 0.3584905660377359,
+    "presence_accuracy": 0.6041189931350115
+  },
+  {
+    "threshold": 0.17500000000000004,
+    "detection_f1": 0.37721274541358224,
+    "presence_accuracy": 0.6155606407322655
+  },
+  {
+    "threshold": 0.20000000000000007,
+    "detection_f1": 0.39876880984952123,
+    "presence_accuracy": 0.6247139588100686
+  },
+  {
+    "threshold": 0.22500000000000003,
+    "detection_f1": 0.4188941779567924,
+    "presence_accuracy": 0.6453089244851259
+  },
+  {
+    "threshold": 0.25000000000000006,
+    "detection_f1": 0.4337539432176656,
+    "presence_accuracy": 0.6613272311212814
+  },
+  {
+    "threshold": 0.2750000000000001,
+    "detection_f1": 0.45027507405840034,
+    "presence_accuracy": 0.7025171624713958
+  },
+  {
+    "threshold": 0.3000000000000001,
+    "detection_f1": 0.4650301065308013,
+    "presence_accuracy": 0.7391304347826086
+  },
+  {
+    "threshold": 0.32500000000000007,
+    "detection_f1": 0.46337817638266066,
+    "presence_accuracy": 0.7528604118993135
+  },
+  {
+    "threshold": 0.3500000000000001,
+    "detection_f1": 0.46478873239436624,
+    "presence_accuracy": 0.7848970251716247
+  },
+  {
+    "threshold": 0.3750000000000001,
+    "detection_f1": 0.4464179988158674,
+    "presence_accuracy": 0.7597254004576659
+  },
+  {
+    "threshold": 0.4000000000000001,
+    "detection_f1": 0.4255591054313099,
+    "presence_accuracy": 0.7437070938215103
+  },
+  {
+    "threshold": 0.4250000000000001,
+    "detection_f1": 0.39094650205761317,
+    "presence_accuracy": 0.7345537757437071
+  },
+  {
+    "threshold": 0.4500000000000001,
+    "detection_f1": 0.3428154631655726,
+    "presence_accuracy": 0.7185354691075515
+  },
+  {
+    "threshold": 0.47500000000000014,
+    "detection_f1": 0.2807843137254902,
+    "presence_accuracy": 0.6727688787185355
+  },
+  {
+    "threshold": 0.5000000000000002,
+    "detection_f1": 0.21778886118038238,
+    "presence_accuracy": 0.620137299771167
+  },
+  {
+    "threshold": 0.5250000000000001,
+    "detection_f1": 0.1696969696969697,
+    "presence_accuracy": 0.5835240274599542
+  },
+  {
+    "threshold": 0.5500000000000003,
+    "detection_f1": 0.11638316920322292,
+    "presence_accuracy": 0.5354691075514875
+  },
+  {
+    "threshold": 0.5750000000000002,
+    "detection_f1": 0.07868252516010979,
+    "presence_accuracy": 0.5080091533180778
+  },
+  {
+    "threshold": 0.6000000000000002,
+    "detection_f1": 0.048507462686567165,
+    "presence_accuracy": 0.4805491990846682
+  },
+  {
+    "threshold": 0.6250000000000002,
+    "detection_f1": 0.03574788334901223,
+    "presence_accuracy": 0.4622425629290618
+  },
+  {
+    "threshold": 0.6500000000000002,
+    "detection_f1": 0.02272727272727273,
+    "presence_accuracy": 0.4439359267734554
+  },
+  {
+    "threshold": 0.6750000000000003,
+    "detection_f1": 0.011439466158245948,
+    "presence_accuracy": 0.43249427917620137
+  },
+  {
+    "threshold": 0.7000000000000003,
+    "detection_f1": 0.00764087870105062,
+    "presence_accuracy": 0.4279176201372998
+  },
+  {
+    "threshold": 0.7250000000000003,
+    "detection_f1": 0.00764087870105062,
+    "presence_accuracy": 0.4279176201372998
+  },
+  {
+    "threshold": 0.7500000000000002,
+    "detection_f1": 0.0019157088122605363,
+    "presence_accuracy": 0.42105263157894735
+  },
+  {
+    "threshold": 0.7750000000000002,
+    "detection_f1": 0.0,
+    "presence_accuracy": 0.41876430205949655
+  },
+  {
+    "threshold": 0.8000000000000003,
+    "detection_f1": 0.0,
+    "presence_accuracy": 0.41876430205949655
+  },
+  {
+    "threshold": 0.8250000000000003,
+    "detection_f1": 0.0,
+    "presence_accuracy": 0.41876430205949655
+  },
+  {
+    "threshold": 0.8500000000000003,
+    "detection_f1": 0.0,
+    "presence_accuracy": 0.41876430205949655
+  }
+]

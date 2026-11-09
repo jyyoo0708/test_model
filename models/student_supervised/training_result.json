@@ -1,0 +1,6 @@
+{
+  "best_epoch": 98,
+  "epochs_run": 118,
+  "validation_ap50": 0.5268055711472364,
+  "train_seconds": 908.6264877319336
+}

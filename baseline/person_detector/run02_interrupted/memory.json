@@ -1,0 +1,200 @@
+{
+  "layers": [
+    {
+      "name": "c1.0",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        8,
+        48,
+        48
+      ],
+      "output_bytes_int8": 18432,
+      "weight_count": 72,
+      "bias_count": 8,
+      "macs": 165888
+    },
+    {
+      "name": "c2.0",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        16,
+        24,
+        24
+      ],
+      "output_bytes_int8": 9216,
+      "weight_count": 1152,
+      "bias_count": 16,
+      "macs": 663552
+    },
+    {
+      "name": "c3.0",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        24,
+        12,
+        12
+      ],
+      "output_bytes_int8": 3456,
+      "weight_count": 3456,
+      "bias_count": 24,
+      "macs": 497664
+    },
+    {
+      "name": "c4.0",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        32,
+        6,
+        6
+      ],
+      "output_bytes_int8": 1152,
+      "weight_count": 6912,
+      "bias_count": 32,
+      "macs": 248832
+    },
+    {
+      "name": "context.0",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        32,
+        6,
+        6
+      ],
+      "output_bytes_int8": 1152,
+      "weight_count": 9216,
+      "bias_count": 32,
+      "macs": 331776
+    },
+    {
+      "name": "up1",
+      "type": "Upsample",
+      "shape": [
+        1,
+        32,
+        12,
+        12
+      ],
+      "output_bytes_int8": 4608,
+      "weight_count": 0,
+      "bias_count": 0,
+      "macs": 0
+    },
+    {
+      "name": "fuse1.0",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        24,
+        12,
+        12
+      ],
+      "output_bytes_int8": 3456,
+      "weight_count": 12096,
+      "bias_count": 24,
+      "macs": 1741824
+    },
+    {
+      "name": "up2",
+      "type": "Upsample",
+      "shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "output_bytes_int8": 13824,
+      "weight_count": 0,
+      "bias_count": 0,
+      "macs": 0
+    },
+    {
+      "name": "fuse2.0",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        16,
+        24,
+        24
+      ],
+      "output_bytes_int8": 9216,
+      "weight_count": 5760,
+      "bias_count": 16,
+      "macs": 3317760
+    },
+    {
+      "name": "head.0",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        16,
+        24,
+        24
+      ],
+      "output_bytes_int8": 9216,
+      "weight_count": 2304,
+      "bias_count": 16,
+      "macs": 1327104
+    },
+    {
+      "name": "heatmap",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        1,
+        24,
+        24
+      ],
+      "output_bytes_int8": 576,
+      "weight_count": 16,
+      "bias_count": 1,
+      "macs": 9216
+    },
+    {
+      "name": "offset",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        2,
+        24,
+        24
+      ],
+      "output_bytes_int8": 1152,
+      "weight_count": 32,
+      "bias_count": 2,
+      "macs": 18432
+    },
+    {
+      "name": "size",
+      "type": "Conv2d",
+      "shape": [
+        1,
+        2,
+        24,
+        24
+      ],
+      "output_bytes_int8": 1152,
+      "weight_count": 32,
+      "bias_count": 2,
+      "macs": 18432
+    }
+  ],
+  "parts": {
+    "weights_int8": 41048,
+    "bias_int32": 692,
+    "input_all_outputs_upsampling_concat_int8": 119808,
+    "largest_conv_int32_accumulator": 73728,
+    "scales_float32": 748,
+    "postprocess_and_other_workspace_reserved": 16384
+  },
+  "total_bytes": 252408,
+  "limit_bytes": 300000,
+  "within_limit": true,
+  "parameters": 41221,
+  "macs": 8340480,
+  "assumptions": "Future batch1 direct int8 convolution, int32 bias/accumulator, all outputs/concat/upsamples retained; 16KiB postprocess reserve. Not an integer implementation."
+}

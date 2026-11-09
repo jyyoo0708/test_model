@@ -1,0 +1,67 @@
+# Local environments, caches, credentials and editor state
+.venv/
+venv/
+.cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+/.agents/
+/.codex/
+/.aws/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.DS_Store
+
+# Datasets: retain instructions and source checksums only
+/data/**
+!/data/**/
+!/data/**/README.md
+!/data/**/SHA256SUMS
+
+# Backups, temporary files, local input and inference output
+/orig/
+backups/
+/tmp/
+/logs/
+/image/
+/inference_input/
+/result/
+/result_*/
+/inference/results/
+
+# Model weights and per-example predictions (metrics/configs remain tracked)
+*.pt
+*.pth
+*.ts
+*.onnx
+*.npz
+*.npy
+*.ckpt
+*.safetensors
+*predictions*.jsonl
+
+# Images may include restricted dataset samples; keep them local
+*.jpg
+*.jpeg
+*.jfif
+*.png
+*.webp
+*.bmp
+*.ppm
+*.gif
+
+# Generated simulation and synthesis outputs
+build/
+obj_dir/
+*.vcd
+*.fst
+*.log
+/rtl/generated/
+/rtl/results/
+/design_compiler/results/
+/design_compiler/blackbox_rtl/verify/

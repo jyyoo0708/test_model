@@ -1,0 +1,378 @@
+`default_nettype none
+// Scalar, output-stationary complete student detector. All SRAM reads synchronous.
+module npu_core #(
+    parameter p_activation_depth = 108288,
+    parameter p_weight_depth = 89820,
+    parameter p_parameter_depth = 274,
+    parameter p_descriptor_depth = 208,
+    parameter p_output_base = 104832
+) (
+    input wire clk_pixel,
+    input wire clk_npu,
+    input wire rst_n,
+    input wire i_frame_start,
+    input wire i_pixel_we,
+    input wire [13:0] i_pixel_addr,
+    input wire signed [7:0] i_pixel_data,
+    input wire i_load_we,
+    input wire [2:0] i_load_space,
+    input wire [17:0] i_load_addr,
+    input wire [31:0] i_load_data,
+    output wire o_busy,
+    output reg o_done,
+    output reg o_result_valid,
+    output reg [11:0] o_result_index,
+    output reg signed [7:0] o_result_data
+);
+localparam [3:0] p_idle=4'd0, p_desc_request=4'd1, p_desc_use=4'd2,
+    p_parameter_request=4'd3, p_parameter_use=4'd4,
+    p_mac_request=4'd5, p_mac_use=4'd6, p_requant=4'd7,
+    p_stream_request=4'd8, p_stream_use=4'd9, p_done=4'd10,
+    p_input_request=4'd11, p_input_use=4'd12;
+localparam p_activation_aw = $clog2(p_activation_depth);
+localparam p_weight_aw = $clog2(p_weight_depth);
+localparam p_parameter_aw = $clog2(p_parameter_depth);
+localparam p_descriptor_aw = $clog2(p_descriptor_depth);
+// The top-level ownership handshake freezes this frame from request to done.
+// Independent clocks are used only on this simple-dual-port input memory.
+reg [3:0] state_q;
+reg [3:0] layer_q, field_q;
+reg [31:0] descriptor_q [0:15];
+wire [31:0] descriptor_data_q;
+wire signed [7:0] activation_data_q, weight_data_q;
+reg activation_padding_q;
+wire signed [31:0] bias_data_q, multiplier_data_q;
+reg signed [31:0] accumulator_q;
+reg [31:0] ox_q, oy_q, oc_q, ic_q, kx_q, ky_q;
+reg [11:0] stream_index_q;
+reg [13:0] input_copy_index_q;
+wire signed [7:0] input_frame_data_q;
+wire [31:0] input_channels;
+wire signed [31:0] ix, iy;
+wire padding_pixel;
+wire [31:0] source_x, source_y, source_width, source_height;
+wire [31:0] activation_addr, weight_addr, output_addr, parameter_addr;
+wire [31:0] descriptor_addr;
+wire signed [15:0] product;
+wire signed [31:0] product_extended;
+wire signed [63:0] requant_product, requant_value;
+wire signed [7:0] requant_byte;
+wire last_kernel, last_output;
+wire activation_read_enable, activation_write_enable;
+wire [p_activation_aw-1:0] activation_read_addr, activation_write_addr;
+wire signed [7:0] activation_write_data;
+
+assign o_busy = state_q != p_idle;
+assign input_channels = descriptor_q[7] + descriptor_q[8];
+assign ix = $signed(ox_q * descriptor_q[13] + kx_q) - $signed(descriptor_q[12] >> 1);
+assign iy = $signed(oy_q * descriptor_q[13] + ky_q) - $signed(descriptor_q[12] >> 1);
+assign padding_pixel = (ix < 0) || (iy < 0) ||
+    (ix >= $signed(descriptor_q[5])) || (iy >= $signed(descriptor_q[6]));
+assign source_x = (ic_q < descriptor_q[7] && descriptor_q[14] != 0) ?
+    ($unsigned(ix) >> 1) : $unsigned(ix);
+assign source_y = (ic_q < descriptor_q[7] && descriptor_q[14] != 0) ?
+    ($unsigned(iy) >> 1) : $unsigned(iy);
+assign source_width = (ic_q < descriptor_q[7] && descriptor_q[14] != 0) ?
+    (descriptor_q[5] >> 1) : descriptor_q[5];
+assign source_height = (ic_q < descriptor_q[7] && descriptor_q[14] != 0) ?
+    (descriptor_q[6] >> 1) : descriptor_q[6];
+assign activation_addr = (ic_q < descriptor_q[7] ? descriptor_q[0] : descriptor_q[1]) +
+    ((ic_q < descriptor_q[7] ? ic_q : ic_q-descriptor_q[7]) * source_height + source_y) * source_width + source_x;
+assign weight_addr = descriptor_q[3] +
+    ((oc_q * input_channels + ic_q) * descriptor_q[12] + ky_q) * descriptor_q[12] + kx_q;
+assign output_addr = descriptor_q[2] + (oc_q * descriptor_q[10] + oy_q)*descriptor_q[9] + ox_q;
+assign parameter_addr = descriptor_q[4] + oc_q;
+assign descriptor_addr = {24'd0,layer_q,field_q};
+assign product = activation_padding_q ? 16'sd0 : activation_data_q * weight_data_q;
+assign product_extended = {{16{product[15]}},product};
+assign requant_product = accumulator_q * multiplier_data_q;
+assign requant_value = (requant_product + 64'sd8388608) >>> 24;
+assign requant_byte = (requant_value > 64'sd127) ? 8'sd127 :
+    (descriptor_q[15] != 0 && requant_value < 0) ? 8'sd0 :
+    (requant_value < -64'sd128) ? -8'sd128 : requant_value[7:0];
+assign last_kernel = kx_q+32'd1 == descriptor_q[12] &&
+    ky_q+32'd1 == descriptor_q[12] && ic_q+32'd1 == input_channels;
+assign last_output = ox_q+32'd1 == descriptor_q[9] &&
+    oy_q+32'd1 == descriptor_q[10] && oc_q+32'd1 == descriptor_q[11];
+assign activation_read_enable = state_q == p_mac_request || state_q == p_stream_request;
+assign activation_read_addr = state_q == p_stream_request ?
+    p_output_base[p_activation_aw-1:0] + {{(p_activation_aw-12){1'b0}},stream_index_q} :
+    padding_pixel ? {p_activation_aw{1'b0}} : activation_addr[p_activation_aw-1:0];
+assign activation_write_enable = state_q == p_requant || state_q == p_input_use;
+assign activation_write_addr = state_q == p_requant ? output_addr[p_activation_aw-1:0] :
+    {{(p_activation_aw-14){1'b0}},input_copy_index_q};
+assign activation_write_data = state_q == p_requant ? requant_byte : input_frame_data_q;
+
+// Memory instances are black boxes for DC; functional models are separate.
+wire  mem_input_frame_i_write_enable;
+wire [14-1:0] mem_input_frame_i_write_address;
+wire [8-1:0] mem_input_frame_i_write_data;
+wire  mem_input_frame_i_read_enable;
+wire [14-1:0] mem_input_frame_i_read_address;
+wire [8-1:0] mem_input_frame_o_read_data;
+assign mem_input_frame_i_write_enable = i_pixel_we && (i_pixel_addr < 14'd9216);
+assign mem_input_frame_i_write_address = i_pixel_addr;
+assign mem_input_frame_i_write_data = i_pixel_data;
+assign mem_input_frame_i_read_enable = state_q == p_input_request;
+assign mem_input_frame_i_read_address = input_copy_index_q;
+assign input_frame_data_q = mem_input_frame_o_read_data;
+npu_sram_bb #(.p_depth(9216), .p_data_w(8), .p_addr_w(14)) u_mem_input_frame (
+    .clk_write(clk_pixel),
+    .clk_read(clk_npu),
+    .i_write_enable(mem_input_frame_i_write_enable),
+    .i_write_address(mem_input_frame_i_write_address),
+    .i_write_data(mem_input_frame_i_write_data),
+    .i_read_enable(mem_input_frame_i_read_enable),
+    .i_read_address(mem_input_frame_i_read_address),
+    .o_read_data(mem_input_frame_o_read_data)
+);
+
+wire  mem_activation_i_write_enable;
+wire [p_activation_aw-1:0] mem_activation_i_write_address;
+wire [8-1:0] mem_activation_i_write_data;
+wire  mem_activation_i_read_enable;
+wire [p_activation_aw-1:0] mem_activation_i_read_address;
+wire [8-1:0] mem_activation_o_read_data;
+assign mem_activation_i_write_enable = activation_write_enable;
+assign mem_activation_i_write_address = activation_write_addr;
+assign mem_activation_i_write_data = activation_write_data;
+assign mem_activation_i_read_enable = activation_read_enable;
+assign mem_activation_i_read_address = activation_read_addr;
+assign activation_data_q = mem_activation_o_read_data;
+npu_sram_bb #(.p_depth(p_activation_depth), .p_data_w(8), .p_addr_w(p_activation_aw)) u_mem_activation (
+    .clk_write(clk_npu),
+    .clk_read(clk_npu),
+    .i_write_enable(mem_activation_i_write_enable),
+    .i_write_address(mem_activation_i_write_address),
+    .i_write_data(mem_activation_i_write_data),
+    .i_read_enable(mem_activation_i_read_enable),
+    .i_read_address(mem_activation_i_read_address),
+    .o_read_data(mem_activation_o_read_data)
+);
+
+wire  mem_weight_i_write_enable;
+wire [p_weight_aw-1:0] mem_weight_i_write_address;
+wire [8-1:0] mem_weight_i_write_data;
+wire  mem_weight_i_read_enable;
+wire [p_weight_aw-1:0] mem_weight_i_read_address;
+wire [8-1:0] mem_weight_o_read_data;
+assign mem_weight_i_write_enable = !o_busy && i_load_we && (i_load_space == 3'd0) && (i_load_addr < p_weight_depth);
+assign mem_weight_i_write_address = i_load_addr[p_weight_aw-1:0];
+assign mem_weight_i_write_data = i_load_data[7:0];
+assign mem_weight_i_read_enable = state_q == p_mac_request;
+assign mem_weight_i_read_address = weight_addr[p_weight_aw-1:0];
+assign weight_data_q = mem_weight_o_read_data;
+npu_sram_bb #(.p_depth(p_weight_depth), .p_data_w(8), .p_addr_w(p_weight_aw)) u_mem_weight (
+    .clk_write(clk_npu),
+    .clk_read(clk_npu),
+    .i_write_enable(mem_weight_i_write_enable),
+    .i_write_address(mem_weight_i_write_address),
+    .i_write_data(mem_weight_i_write_data),
+    .i_read_enable(mem_weight_i_read_enable),
+    .i_read_address(mem_weight_i_read_address),
+    .o_read_data(mem_weight_o_read_data)
+);
+
+wire  mem_bias_i_write_enable;
+wire [p_parameter_aw-1:0] mem_bias_i_write_address;
+wire [32-1:0] mem_bias_i_write_data;
+wire  mem_bias_i_read_enable;
+wire [p_parameter_aw-1:0] mem_bias_i_read_address;
+wire [32-1:0] mem_bias_o_read_data;
+assign mem_bias_i_write_enable = !o_busy && i_load_we && (i_load_space == 3'd1) && (i_load_addr < p_parameter_depth);
+assign mem_bias_i_write_address = i_load_addr[p_parameter_aw-1:0];
+assign mem_bias_i_write_data = i_load_data;
+assign mem_bias_i_read_enable = state_q == p_parameter_request;
+assign mem_bias_i_read_address = parameter_addr[p_parameter_aw-1:0];
+assign bias_data_q = mem_bias_o_read_data;
+npu_sram_bb #(.p_depth(p_parameter_depth), .p_data_w(32), .p_addr_w(p_parameter_aw)) u_mem_bias (
+    .clk_write(clk_npu),
+    .clk_read(clk_npu),
+    .i_write_enable(mem_bias_i_write_enable),
+    .i_write_address(mem_bias_i_write_address),
+    .i_write_data(mem_bias_i_write_data),
+    .i_read_enable(mem_bias_i_read_enable),
+    .i_read_address(mem_bias_i_read_address),
+    .o_read_data(mem_bias_o_read_data)
+);
+
+wire  mem_multiplier_i_write_enable;
+wire [p_parameter_aw-1:0] mem_multiplier_i_write_address;
+wire [32-1:0] mem_multiplier_i_write_data;
+wire  mem_multiplier_i_read_enable;
+wire [p_parameter_aw-1:0] mem_multiplier_i_read_address;
+wire [32-1:0] mem_multiplier_o_read_data;
+assign mem_multiplier_i_write_enable = !o_busy && i_load_we && (i_load_space == 3'd3) && (i_load_addr < p_parameter_depth);
+assign mem_multiplier_i_write_address = i_load_addr[p_parameter_aw-1:0];
+assign mem_multiplier_i_write_data = i_load_data;
+assign mem_multiplier_i_read_enable = state_q == p_parameter_request;
+assign mem_multiplier_i_read_address = parameter_addr[p_parameter_aw-1:0];
+assign multiplier_data_q = mem_multiplier_o_read_data;
+npu_sram_bb #(.p_depth(p_parameter_depth), .p_data_w(32), .p_addr_w(p_parameter_aw)) u_mem_multiplier (
+    .clk_write(clk_npu),
+    .clk_read(clk_npu),
+    .i_write_enable(mem_multiplier_i_write_enable),
+    .i_write_address(mem_multiplier_i_write_address),
+    .i_write_data(mem_multiplier_i_write_data),
+    .i_read_enable(mem_multiplier_i_read_enable),
+    .i_read_address(mem_multiplier_i_read_address),
+    .o_read_data(mem_multiplier_o_read_data)
+);
+
+wire  mem_descriptor_i_write_enable;
+wire [p_descriptor_aw-1:0] mem_descriptor_i_write_address;
+wire [32-1:0] mem_descriptor_i_write_data;
+wire  mem_descriptor_i_read_enable;
+wire [p_descriptor_aw-1:0] mem_descriptor_i_read_address;
+wire [32-1:0] mem_descriptor_o_read_data;
+assign mem_descriptor_i_write_enable = !o_busy && i_load_we && (i_load_space == 3'd2) && (i_load_addr < p_descriptor_depth);
+assign mem_descriptor_i_write_address = i_load_addr[p_descriptor_aw-1:0];
+assign mem_descriptor_i_write_data = i_load_data;
+assign mem_descriptor_i_read_enable = state_q == p_desc_request;
+assign mem_descriptor_i_read_address = descriptor_addr[p_descriptor_aw-1:0];
+assign descriptor_data_q = mem_descriptor_o_read_data;
+npu_sram_bb #(.p_depth(p_descriptor_depth), .p_data_w(32), .p_addr_w(p_descriptor_aw)) u_mem_descriptor (
+    .clk_write(clk_npu),
+    .clk_read(clk_npu),
+    .i_write_enable(mem_descriptor_i_write_enable),
+    .i_write_address(mem_descriptor_i_write_address),
+    .i_write_data(mem_descriptor_i_write_data),
+    .i_read_enable(mem_descriptor_i_read_enable),
+    .i_read_address(mem_descriptor_i_read_address),
+    .o_read_data(mem_descriptor_o_read_data)
+);
+
+always @(posedge clk_npu) begin
+    if (state_q == p_mac_request) begin
+        activation_padding_q <= padding_pixel;
+    end
+end
+
+// Closely coupled counters and controller retain an explicit cycle schedule.
+always @(posedge clk_npu or negedge rst_n) begin
+    if (!rst_n) begin
+        state_q <= p_idle;
+        layer_q <= 4'd0;
+        field_q <= 4'd0;
+        ox_q <= 32'd0;
+        oy_q <= 32'd0;
+        oc_q <= 32'd0;
+        ic_q <= 32'd0;
+        kx_q <= 32'd0;
+        ky_q <= 32'd0;
+        stream_index_q <= 12'd0;
+        input_copy_index_q <= 14'd0;
+        accumulator_q <= 32'sd0;
+        o_done <= 1'b0;
+        o_result_valid <= 1'b0;
+        o_result_index <= 12'd0;
+        o_result_data <= 8'sd0;
+    end else begin
+        o_done <= 1'b0;
+        o_result_valid <= 1'b0;
+        case (state_q)
+            p_idle: begin
+                if (i_frame_start) begin
+                    layer_q <= 4'd0;
+                    field_q <= 4'd0;
+                    input_copy_index_q <= 14'd0;
+                    state_q <= p_input_request;
+                end
+            end
+            p_input_request: state_q <= p_input_use;
+            p_input_use: begin
+                if (input_copy_index_q == 14'd9215) begin
+                    state_q <= p_desc_request;
+                end else begin
+                    input_copy_index_q <= input_copy_index_q + 14'd1;
+                    state_q <= p_input_request;
+                end
+            end
+            p_desc_request: state_q <= p_desc_use;
+            p_desc_use: begin
+                descriptor_q[field_q] <= descriptor_data_q;
+                if (field_q == 4'd15) begin
+                    ox_q <= 32'd0;
+                    oy_q <= 32'd0;
+                    oc_q <= 32'd0;
+                    state_q <= p_parameter_request;
+                end else begin
+                    field_q <= field_q + 4'd1;
+                    state_q <= p_desc_request;
+                end
+            end
+            p_parameter_request: state_q <= p_parameter_use;
+            p_parameter_use: begin
+                accumulator_q <= bias_data_q;
+                ic_q <= 32'd0;
+                kx_q <= 32'd0;
+                ky_q <= 32'd0;
+                state_q <= p_mac_request;
+            end
+            p_mac_request: state_q <= p_mac_use;
+            p_mac_use: begin
+                accumulator_q <= accumulator_q + product_extended;
+                if (last_kernel) begin
+                    state_q <= p_requant;
+                end else begin
+                    if (kx_q+32'd1 == descriptor_q[12]) begin
+                        kx_q <= 32'd0;
+                        if (ky_q+32'd1 == descriptor_q[12]) begin
+                            ky_q <= 32'd0;
+                            ic_q <= ic_q + 32'd1;
+                        end else begin
+                            ky_q <= ky_q + 32'd1;
+                        end
+                    end else begin
+                        kx_q <= kx_q + 32'd1;
+                    end
+                    state_q <= p_mac_request;
+                end
+            end
+            p_requant: begin
+                if (last_output) begin
+                    if (layer_q == 4'd12) begin
+                        stream_index_q <= 12'd0;
+                        state_q <= p_stream_request;
+                    end else begin
+                        layer_q <= layer_q + 4'd1;
+                        field_q <= 4'd0;
+                        state_q <= p_desc_request;
+                    end
+                end else begin
+                    if (ox_q+32'd1 == descriptor_q[9]) begin
+                        ox_q <= 32'd0;
+                        if (oy_q+32'd1 == descriptor_q[10]) begin
+                            oy_q <= 32'd0;
+                            oc_q <= oc_q + 32'd1;
+                        end else begin
+                            oy_q <= oy_q + 32'd1;
+                        end
+                    end else begin
+                        ox_q <= ox_q + 32'd1;
+                    end
+                    state_q <= p_parameter_request;
+                end
+            end
+            p_stream_request: state_q <= p_stream_use;
+            p_stream_use: begin
+                o_result_valid <= 1'b1;
+                o_result_index <= stream_index_q;
+                o_result_data <= activation_data_q;
+                if (stream_index_q == 12'd3455) begin
+                    state_q <= p_done;
+                end else begin
+                    stream_index_q <= stream_index_q + 12'd1;
+                    state_q <= p_stream_request;
+                end
+            end
+            p_done: begin
+                o_done <= 1'b1;
+                state_q <= p_idle;
+            end
+            default: state_q <= p_idle;
+        endcase
+    end
+end
+endmodule
+`default_nettype wire

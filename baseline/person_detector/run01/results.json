@@ -1,0 +1,126 @@
+{
+  "best_epoch": 7,
+  "epochs_run": 30,
+  "threshold": 0.3000000000000001,
+  "nms_iou": 0.5,
+  "topk": 50,
+  "metrics": {
+    "train": {
+      "ap50": 0.4120289686665025,
+      "ap75": 0.06901884013998623,
+      "map50_95": 0.14950118012407293,
+      "detection_at_selected_threshold": {
+        "ap": 0.37828213704583863,
+        "iou": 0.5,
+        "confidence": 0.3000000000000001,
+        "gt": 7972,
+        "tp": 4259,
+        "fp": 4990,
+        "fn": 3713,
+        "ignored_detections": 1035,
+        "precision": 0.4604822142934371,
+        "recall": 0.5342448569994982,
+        "f1": 0.4946286510655595
+      },
+      "presence_at_selected_threshold": {
+        "accuracy": 0.722254004576659,
+        "precision": 0.6958215297450425,
+        "recall": 0.9460760712566201,
+        "f1": 0.8018771679249133,
+        "balanced_accuracy": 0.6703600934154841,
+        "confusion_true_rows_pred_columns": [
+          [
+            560,
+            859
+          ],
+          [
+            112,
+            1965
+          ]
+        ],
+        "majority_baseline": 0.5941075514874142
+      },
+      "images": 3496,
+      "people": 7972
+    },
+    "val": {
+      "ap50": 0.37436153074780465,
+      "ap75": 0.04837866680618703,
+      "map50_95": 0.12611854971256206,
+      "detection_at_selected_threshold": {
+        "ap": 0.34423730871847275,
+        "iou": 0.5,
+        "confidence": 0.3000000000000001,
+        "gt": 1043,
+        "tp": 502,
+        "fp": 614,
+        "fn": 541,
+        "ignored_detections": 138,
+        "precision": 0.449820788530466,
+        "recall": 0.4813039309683605,
+        "f1": 0.4650301065308013
+      },
+      "presence_at_selected_threshold": {
+        "accuracy": 0.7391304347826086,
+        "precision": 0.7,
+        "recall": 0.9645669291338582,
+        "f1": 0.8112582781456954,
+        "balanced_accuracy": 0.6953982186652897,
+        "confusion_true_rows_pred_columns": [
+          [
+            78,
+            105
+          ],
+          [
+            9,
+            245
+          ]
+        ],
+        "majority_baseline": 0.5812356979405034
+      },
+      "images": 437,
+      "people": 1043
+    },
+    "test": {
+      "ap50": 0.38334136328909857,
+      "ap75": 0.055138763379026824,
+      "map50_95": 0.1333120164538361,
+      "detection_at_selected_threshold": {
+        "ap": 0.3530017033675548,
+        "iou": 0.5,
+        "confidence": 0.3000000000000001,
+        "gt": 1060,
+        "tp": 523,
+        "fp": 658,
+        "fn": 537,
+        "ignored_detections": 152,
+        "precision": 0.4428450465707028,
+        "recall": 0.49339622641509434,
+        "f1": 0.466755912539045
+      },
+      "presence_at_selected_threshold": {
+        "accuracy": 0.6842105263157895,
+        "precision": 0.6703601108033241,
+        "recall": 0.9272030651340997,
+        "f1": 0.7781350482315113,
+        "balanced_accuracy": 0.6255333507488681,
+        "confusion_true_rows_pred_columns": [
+          [
+            57,
+            119
+          ],
+          [
+            19,
+            242
+          ]
+        ],
+        "majority_baseline": 0.597254004576659
+      },
+      "images": 437,
+      "people": 1060
+    }
+  },
+  "bn_fold_max_abs_error": 2.1457672119140625e-06,
+  "export_reload_max_abs_error": 0.0,
+  "wall_seconds": 179.17206573486328
+}

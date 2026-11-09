@@ -1,0 +1,33 @@
+{
+  "data": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/data/processed/person96_detection",
+  "output": "models/person_detector/run02",
+  "epochs": 80,
+  "threads": 8,
+  "batch_size": 128,
+  "lr": 0.001,
+  "seed": 20261105,
+  "patience": 15,
+  "spatial_augment": true,
+  "supervise_known_small": true,
+  "initialize_classifier": true,
+  "min_pred_width": 6.0,
+  "min_pred_height": 20.0,
+  "python": "3.11.5",
+  "torch": "2.5.1+cpu",
+  "numpy": "2.2.6",
+  "device": "cpu",
+  "precision": "float32",
+  "selection": "highest validation 101-point AP50, score floor 0.01, max50, NMS0.5",
+  "threshold_selection": "maximum validation detection F1 at IoU0.5; ties presence balanced accuracy then higher score",
+  "heatmap_stride": 4,
+  "loss": "Center focal + offset L1 + 4*size L1 + 2*GIoU",
+  "augmentation": "both horizontal orientations each epoch; brightness/contrast [0.85,1.15]; no crop/rotation",
+  "source_code_sha256": {
+    "scripts/train_person_detector.py": "51aad75bae39d850985cea3969d7245d53099e515b119b02e2f3cd94eb9876c2",
+    "models/person_detector/model.py": "89991f6051d7581eb945bcff38a4d0cfd616df908298790e532bc4e0980c0578",
+    "models/person_detector/utils.py": "560ac31a09795b13efaada7a0df4cc89b95e205c30c18b048c37bc7c71cd4cd6"
+  },
+  "data_config_sha256": "5841eb253fe6e07a95b2c08d58b42086be80a1ee9c03b963d38b8bfd87a5c677",
+  "initialization": "first two Conv/BN blocks from previous classifier trained on same train sources; all other layers random",
+  "classifier_checkpoint_sha256": "47da4c35f036a822737ad84aa7a7bc1d4994c7c2b521a21f56cb35f54c3cdda9"
+}

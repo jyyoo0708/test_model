@@ -1,0 +1,5 @@
+{
+  "run": "run02",
+  "threshold": 0.32500000000000007,
+  "selection": "validation AP50"
+}

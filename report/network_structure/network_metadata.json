@@ -1,0 +1,1316 @@
+{
+  "model_parameters_fused": 90094,
+  "weights": 89820,
+  "bias": 274,
+  "training_parameters_unfused": 90362,
+  "conv_layers": 13,
+  "upsample_operations": 2,
+  "concat_operations": 3,
+  "macs": 20321280,
+  "total_sram_bytes": 220332,
+  "input_nchw": [
+    1,
+    1,
+    96,
+    96
+  ],
+  "output_nchw": [
+    1,
+    6,
+    24,
+    24
+  ],
+  "logical_operations": [
+    {
+      "name": "input",
+      "op": "Input",
+      "sources": [],
+      "inputs": [],
+      "output": [
+        1,
+        1,
+        96,
+        96
+      ],
+      "kernel": "—",
+      "stride": "—",
+      "weights": 0,
+      "bias": 0,
+      "note": "입력 q=(gray*127+127)//255, scale=1/127"
+    },
+    {
+      "name": "c1",
+      "op": "Conv2D + ReLU + Requant",
+      "sources": [
+        "input"
+      ],
+      "inputs": [
+        [
+          1,
+          1,
+          96,
+          96
+        ]
+      ],
+      "output": [
+        1,
+        12,
+        48,
+        48
+      ],
+      "kernel": "3 × 3",
+      "stride": "2 × 2",
+      "weights": 108,
+      "bias": 12,
+      "note": "BN folding; padding=1"
+    },
+    {
+      "name": "c2",
+      "op": "Conv2D + ReLU + Requant",
+      "sources": [
+        "c1"
+      ],
+      "inputs": [
+        [
+          1,
+          12,
+          48,
+          48
+        ]
+      ],
+      "output": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "kernel": "3 × 3",
+      "stride": "2 × 2",
+      "weights": 2592,
+      "bias": 24,
+      "note": "BN folding; padding=1"
+    },
+    {
+      "name": "c3",
+      "op": "Conv2D + ReLU + Requant",
+      "sources": [
+        "c2"
+      ],
+      "inputs": [
+        [
+          1,
+          24,
+          24,
+          24
+        ]
+      ],
+      "output": [
+        1,
+        32,
+        12,
+        12
+      ],
+      "kernel": "3 × 3",
+      "stride": "2 × 2",
+      "weights": 6912,
+      "bias": 32,
+      "note": "BN folding; padding=1"
+    },
+    {
+      "name": "c4",
+      "op": "Conv2D + ReLU + Requant",
+      "sources": [
+        "c3"
+      ],
+      "inputs": [
+        [
+          1,
+          32,
+          12,
+          12
+        ]
+      ],
+      "output": [
+        1,
+        48,
+        6,
+        6
+      ],
+      "kernel": "3 × 3",
+      "stride": "2 × 2",
+      "weights": 13824,
+      "bias": 48,
+      "note": "BN folding; padding=1"
+    },
+    {
+      "name": "context",
+      "op": "Conv2D + ReLU + Requant",
+      "sources": [
+        "c4"
+      ],
+      "inputs": [
+        [
+          1,
+          48,
+          6,
+          6
+        ]
+      ],
+      "output": [
+        1,
+        48,
+        6,
+        6
+      ],
+      "kernel": "3 × 3",
+      "stride": "1 × 1",
+      "weights": 20736,
+      "bias": 48,
+      "note": "BN folding; padding=1"
+    },
+    {
+      "name": "up1",
+      "op": "Nearest upsample ×2",
+      "sources": [
+        "context"
+      ],
+      "inputs": [
+        [
+          1,
+          48,
+          6,
+          6
+        ]
+      ],
+      "output": [
+        1,
+        48,
+        12,
+        12
+      ],
+      "kernel": "—",
+      "stride": "—",
+      "weights": 0,
+      "bias": 0,
+      "note": "파라미터 없음; RTL fuse1 주소 발생기로 구현"
+    },
+    {
+      "name": "concat1",
+      "op": "Concat channels",
+      "sources": [
+        "up1",
+        "c3"
+      ],
+      "inputs": [
+        [
+          1,
+          48,
+          12,
+          12
+        ],
+        [
+          1,
+          32,
+          12,
+          12
+        ]
+      ],
+      "output": [
+        1,
+        80,
+        12,
+        12
+      ],
+      "kernel": "—",
+      "stride": "—",
+      "weights": 0,
+      "bias": 0,
+      "note": "RTL 가상 concat; 별도 tensor SRAM 미할당"
+    },
+    {
+      "name": "fuse1",
+      "op": "Conv2D + ReLU + Requant",
+      "sources": [
+        "concat1"
+      ],
+      "inputs": [
+        [
+          1,
+          80,
+          12,
+          12
+        ]
+      ],
+      "output": [
+        1,
+        32,
+        12,
+        12
+      ],
+      "kernel": "3 × 3",
+      "stride": "1 × 1",
+      "weights": 23040,
+      "bias": 32,
+      "note": "BN folding; padding=1"
+    },
+    {
+      "name": "up2",
+      "op": "Nearest upsample ×2",
+      "sources": [
+        "fuse1"
+      ],
+      "inputs": [
+        [
+          1,
+          32,
+          12,
+          12
+        ]
+      ],
+      "output": [
+        1,
+        32,
+        24,
+        24
+      ],
+      "kernel": "—",
+      "stride": "—",
+      "weights": 0,
+      "bias": 0,
+      "note": "파라미터 없음; RTL fuse2 주소 발생기로 구현"
+    },
+    {
+      "name": "concat2",
+      "op": "Concat channels",
+      "sources": [
+        "up2",
+        "c2"
+      ],
+      "inputs": [
+        [
+          1,
+          32,
+          24,
+          24
+        ],
+        [
+          1,
+          24,
+          24,
+          24
+        ]
+      ],
+      "output": [
+        1,
+        56,
+        24,
+        24
+      ],
+      "kernel": "—",
+      "stride": "—",
+      "weights": 0,
+      "bias": 0,
+      "note": "RTL 가상 concat; 별도 tensor SRAM 미할당"
+    },
+    {
+      "name": "fuse2",
+      "op": "Conv2D + ReLU + Requant",
+      "sources": [
+        "concat2"
+      ],
+      "inputs": [
+        [
+          1,
+          56,
+          24,
+          24
+        ]
+      ],
+      "output": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "kernel": "3 × 3",
+      "stride": "1 × 1",
+      "weights": 12096,
+      "bias": 24,
+      "note": "BN folding; padding=1"
+    },
+    {
+      "name": "head",
+      "op": "Conv2D + ReLU + Requant",
+      "sources": [
+        "fuse2"
+      ],
+      "inputs": [
+        [
+          1,
+          24,
+          24,
+          24
+        ]
+      ],
+      "output": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "kernel": "3 × 3",
+      "stride": "1 × 1",
+      "weights": 5184,
+      "bias": 24,
+      "note": "BN folding; padding=1"
+    },
+    {
+      "name": "regression",
+      "op": "Conv2D + ReLU + Requant",
+      "sources": [
+        "head"
+      ],
+      "inputs": [
+        [
+          1,
+          24,
+          24,
+          24
+        ]
+      ],
+      "output": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "kernel": "3 × 3",
+      "stride": "1 × 1",
+      "weights": 5184,
+      "bias": 24,
+      "note": "BN folding; padding=1"
+    },
+    {
+      "name": "heatmap",
+      "op": "Conv2D + Requant (logits)",
+      "sources": [
+        "head"
+      ],
+      "inputs": [
+        [
+          1,
+          24,
+          24,
+          24
+        ]
+      ],
+      "output": [
+        1,
+        1,
+        24,
+        24
+      ],
+      "kernel": "1 × 1",
+      "stride": "1 × 1",
+      "weights": 24,
+      "bias": 1,
+      "note": "padding=0; activation 없음; 후처리에서 sigmoid 적용"
+    },
+    {
+      "name": "offset",
+      "op": "Conv2D + Requant (logits)",
+      "sources": [
+        "regression"
+      ],
+      "inputs": [
+        [
+          1,
+          24,
+          24,
+          24
+        ]
+      ],
+      "output": [
+        1,
+        2,
+        24,
+        24
+      ],
+      "kernel": "1 × 1",
+      "stride": "1 × 1",
+      "weights": 48,
+      "bias": 2,
+      "note": "padding=0; activation 없음; 후처리에서 sigmoid 적용"
+    },
+    {
+      "name": "size",
+      "op": "Conv2D + Requant (logits)",
+      "sources": [
+        "regression"
+      ],
+      "inputs": [
+        [
+          1,
+          24,
+          24,
+          24
+        ]
+      ],
+      "output": [
+        1,
+        2,
+        24,
+        24
+      ],
+      "kernel": "1 × 1",
+      "stride": "1 × 1",
+      "weights": 48,
+      "bias": 2,
+      "note": "padding=0; activation 없음; 후처리에서 sigmoid 적용"
+    },
+    {
+      "name": "quality",
+      "op": "Conv2D + Requant (logits)",
+      "sources": [
+        "regression"
+      ],
+      "inputs": [
+        [
+          1,
+          24,
+          24,
+          24
+        ]
+      ],
+      "output": [
+        1,
+        1,
+        24,
+        24
+      ],
+      "kernel": "1 × 1",
+      "stride": "1 × 1",
+      "weights": 24,
+      "bias": 1,
+      "note": "padding=0; activation 없음; 후처리에서 sigmoid 적용"
+    },
+    {
+      "name": "output",
+      "op": "Concat channels",
+      "sources": [
+        "heatmap",
+        "offset",
+        "size",
+        "quality"
+      ],
+      "inputs": [
+        [
+          1,
+          1,
+          24,
+          24
+        ],
+        [
+          1,
+          2,
+          24,
+          24
+        ],
+        [
+          1,
+          2,
+          24,
+          24
+        ],
+        [
+          1,
+          1,
+          24,
+          24
+        ]
+      ],
+      "output": [
+        1,
+        6,
+        24,
+        24
+      ],
+      "kernel": "—",
+      "stride": "—",
+      "weights": 0,
+      "bias": 0,
+      "note": "최종 logits 패킹; 순서 heatmap,offset_x,offset_y,width,height,quality"
+    }
+  ],
+  "convolutions": [
+    {
+      "index": 0,
+      "name": "c1",
+      "op": "Conv2D + ReLU + Requant",
+      "input_shape": [
+        1,
+        1,
+        96,
+        96
+      ],
+      "output_shape": [
+        1,
+        12,
+        48,
+        48
+      ],
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "weights": 108,
+      "bias": 12,
+      "weight_shape": [
+        12,
+        1,
+        3,
+        3
+      ],
+      "macs": 248832,
+      "relu": true,
+      "descriptor": [
+        0,
+        0,
+        9216,
+        0,
+        0,
+        96,
+        96,
+        1,
+        0,
+        48,
+        48,
+        12,
+        3,
+        2,
+        0,
+        1
+      ],
+      "input_scale": 0.007874015748031496,
+      "output_scale": 0.08970319943165216
+    },
+    {
+      "index": 1,
+      "name": "c2",
+      "op": "Conv2D + ReLU + Requant",
+      "input_shape": [
+        1,
+        12,
+        48,
+        48
+      ],
+      "output_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "weights": 2592,
+      "bias": 24,
+      "weight_shape": [
+        24,
+        12,
+        3,
+        3
+      ],
+      "macs": 1492992,
+      "relu": true,
+      "descriptor": [
+        9216,
+        0,
+        36864,
+        108,
+        12,
+        48,
+        48,
+        12,
+        0,
+        24,
+        24,
+        24,
+        3,
+        2,
+        0,
+        1
+      ],
+      "input_scale": 0.08970319943165216,
+      "output_scale": 0.12564663624200295
+    },
+    {
+      "index": 2,
+      "name": "c3",
+      "op": "Conv2D + ReLU + Requant",
+      "input_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "output_shape": [
+        1,
+        32,
+        12,
+        12
+      ],
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "weights": 6912,
+      "bias": 32,
+      "weight_shape": [
+        32,
+        24,
+        3,
+        3
+      ],
+      "macs": 995328,
+      "relu": true,
+      "descriptor": [
+        36864,
+        0,
+        50688,
+        2700,
+        36,
+        24,
+        24,
+        24,
+        0,
+        12,
+        12,
+        32,
+        3,
+        2,
+        0,
+        1
+      ],
+      "input_scale": 0.12564663624200295,
+      "output_scale": 0.0814010139525406
+    },
+    {
+      "index": 3,
+      "name": "c4",
+      "op": "Conv2D + ReLU + Requant",
+      "input_shape": [
+        1,
+        32,
+        12,
+        12
+      ],
+      "output_shape": [
+        1,
+        48,
+        6,
+        6
+      ],
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "weights": 13824,
+      "bias": 48,
+      "weight_shape": [
+        48,
+        32,
+        3,
+        3
+      ],
+      "macs": 497664,
+      "relu": true,
+      "descriptor": [
+        50688,
+        0,
+        55296,
+        9612,
+        68,
+        12,
+        12,
+        32,
+        0,
+        6,
+        6,
+        48,
+        3,
+        2,
+        0,
+        1
+      ],
+      "input_scale": 0.0814010139525406,
+      "output_scale": 0.057140834688201664
+    },
+    {
+      "index": 4,
+      "name": "context",
+      "op": "Conv2D + ReLU + Requant",
+      "input_shape": [
+        1,
+        48,
+        6,
+        6
+      ],
+      "output_shape": [
+        1,
+        48,
+        6,
+        6
+      ],
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "weights": 20736,
+      "bias": 48,
+      "weight_shape": [
+        48,
+        48,
+        3,
+        3
+      ],
+      "macs": 746496,
+      "relu": true,
+      "descriptor": [
+        55296,
+        0,
+        57024,
+        23436,
+        116,
+        6,
+        6,
+        48,
+        0,
+        6,
+        6,
+        48,
+        3,
+        1,
+        0,
+        1
+      ],
+      "input_scale": 0.057140834688201664,
+      "output_scale": 0.0814010139525406
+    },
+    {
+      "index": 5,
+      "name": "fuse1",
+      "op": "Conv2D + ReLU + Requant",
+      "input_shape": [
+        1,
+        80,
+        12,
+        12
+      ],
+      "output_shape": [
+        1,
+        32,
+        12,
+        12
+      ],
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "weights": 23040,
+      "bias": 32,
+      "weight_shape": [
+        32,
+        80,
+        3,
+        3
+      ],
+      "macs": 3317760,
+      "relu": true,
+      "descriptor": [
+        57024,
+        50688,
+        58752,
+        44172,
+        164,
+        12,
+        12,
+        48,
+        32,
+        12,
+        12,
+        32,
+        3,
+        1,
+        1,
+        1
+      ],
+      "input_scale": 0.0814010139525406,
+      "output_scale": 0.12564663624200295
+    },
+    {
+      "index": 6,
+      "name": "fuse2",
+      "op": "Conv2D + ReLU + Requant",
+      "input_shape": [
+        1,
+        56,
+        24,
+        24
+      ],
+      "output_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "weights": 12096,
+      "bias": 24,
+      "weight_shape": [
+        24,
+        56,
+        3,
+        3
+      ],
+      "macs": 6967296,
+      "relu": true,
+      "descriptor": [
+        58752,
+        36864,
+        63360,
+        67212,
+        196,
+        24,
+        24,
+        32,
+        24,
+        24,
+        24,
+        24,
+        3,
+        1,
+        1,
+        1
+      ],
+      "input_scale": 0.12564663624200295,
+      "output_scale": 0.05150394740067129
+    },
+    {
+      "index": 7,
+      "name": "head",
+      "op": "Conv2D + ReLU + Requant",
+      "input_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "output_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "weights": 5184,
+      "bias": 24,
+      "weight_shape": [
+        24,
+        24,
+        3,
+        3
+      ],
+      "macs": 2985984,
+      "relu": true,
+      "descriptor": [
+        63360,
+        0,
+        77184,
+        79308,
+        220,
+        24,
+        24,
+        24,
+        0,
+        24,
+        24,
+        24,
+        3,
+        1,
+        0,
+        1
+      ],
+      "input_scale": 0.05150394740067129,
+      "output_scale": 0.0636252681101401
+    },
+    {
+      "index": 8,
+      "name": "regression",
+      "op": "Conv2D + ReLU + Requant",
+      "input_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "output_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "weights": 5184,
+      "bias": 24,
+      "weight_shape": [
+        24,
+        24,
+        3,
+        3
+      ],
+      "macs": 2985984,
+      "relu": true,
+      "descriptor": [
+        77184,
+        0,
+        91008,
+        84492,
+        244,
+        24,
+        24,
+        24,
+        0,
+        24,
+        24,
+        24,
+        3,
+        1,
+        0,
+        1
+      ],
+      "input_scale": 0.0636252681101401,
+      "output_scale": 0.051522806873471716
+    },
+    {
+      "index": 9,
+      "name": "heatmap",
+      "op": "Conv2D + Requant (logits)",
+      "input_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "output_shape": [
+        1,
+        1,
+        24,
+        24
+      ],
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "padding": [
+        0,
+        0
+      ],
+      "weights": 24,
+      "bias": 1,
+      "weight_shape": [
+        1,
+        24,
+        1,
+        1
+      ],
+      "macs": 13824,
+      "relu": false,
+      "descriptor": [
+        77184,
+        0,
+        104832,
+        89676,
+        268,
+        24,
+        24,
+        24,
+        0,
+        24,
+        24,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "input_scale": 0.0636252681101401,
+      "output_scale": 0.0623005168644462
+    },
+    {
+      "index": 10,
+      "name": "offset",
+      "op": "Conv2D + Requant (logits)",
+      "input_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "output_shape": [
+        1,
+        2,
+        24,
+        24
+      ],
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "padding": [
+        0,
+        0
+      ],
+      "weights": 48,
+      "bias": 2,
+      "weight_shape": [
+        2,
+        24,
+        1,
+        1
+      ],
+      "macs": 27648,
+      "relu": false,
+      "descriptor": [
+        91008,
+        0,
+        105408,
+        89700,
+        269,
+        24,
+        24,
+        24,
+        0,
+        24,
+        24,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      "input_scale": 0.051522806873471716,
+      "output_scale": 0.025934925229530635
+    },
+    {
+      "index": 11,
+      "name": "size",
+      "op": "Conv2D + Requant (logits)",
+      "input_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "output_shape": [
+        1,
+        2,
+        24,
+        24
+      ],
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "padding": [
+        0,
+        0
+      ],
+      "weights": 48,
+      "bias": 2,
+      "weight_shape": [
+        2,
+        24,
+        1,
+        1
+      ],
+      "macs": 27648,
+      "relu": false,
+      "descriptor": [
+        91008,
+        0,
+        106560,
+        89748,
+        271,
+        24,
+        24,
+        24,
+        0,
+        24,
+        24,
+        2,
+        1,
+        1,
+        0,
+        0
+      ],
+      "input_scale": 0.051522806873471716,
+      "output_scale": 0.019964225648895023
+    },
+    {
+      "index": 12,
+      "name": "quality",
+      "op": "Conv2D + Requant (logits)",
+      "input_shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "output_shape": [
+        1,
+        1,
+        24,
+        24
+      ],
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "padding": [
+        0,
+        0
+      ],
+      "weights": 24,
+      "bias": 1,
+      "weight_shape": [
+        1,
+        24,
+        1,
+        1
+      ],
+      "macs": 13824,
+      "relu": false,
+      "descriptor": [
+        91008,
+        0,
+        107712,
+        89796,
+        273,
+        24,
+        24,
+        24,
+        0,
+        24,
+        24,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "input_scale": 0.051522806873471716,
+      "output_scale": 0.11241805459570697
+    }
+  ],
+  "checkpoint_sha256": "026e0c3aa0dd90f4b854e218fa0f602fc0dc411fd54abb9196ec1c2d92540a81",
+  "source_manifest_sha256": "b5c0095189fb1a818e6b7b875910ca20954f3e211800ccdc690fb6054ca3c0cb"
+}

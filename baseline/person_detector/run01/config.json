@@ -1,0 +1,26 @@
+{
+  "data": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/data/processed/person96_detection",
+  "output": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/models/person_detector/run01",
+  "epochs": 80,
+  "threads": 8,
+  "batch_size": 128,
+  "lr": 0.002,
+  "seed": 20261105,
+  "patience": 15,
+  "python": "3.11.5",
+  "torch": "2.5.1+cpu",
+  "numpy": "2.2.6",
+  "device": "cpu",
+  "precision": "float32",
+  "selection": "highest validation 101-point AP50, score floor 0.01, max50, NMS0.5",
+  "threshold_selection": "maximum validation detection F1 at IoU0.5; ties presence balanced accuracy then higher score",
+  "heatmap_stride": 4,
+  "loss": "Center focal + offset L1 + 4*size L1 + 2*GIoU",
+  "augmentation": "both horizontal orientations each epoch; brightness/contrast [0.85,1.15]; no crop/rotation",
+  "source_code_sha256": {
+    "scripts/train_person_detector.py": "55bd874c58f77b3a8668e85f4887d24ceb58e952c5038f30c729df8bf89352c5",
+    "models/person_detector/model.py": "89991f6051d7581eb945bcff38a4d0cfd616df908298790e532bc4e0980c0578",
+    "models/person_detector/utils.py": "011d2544bf4c13320d7948ae9f5b1f4f1cb71df01b8dc9e0bee32b2284cf8511"
+  },
+  "data_config_sha256": "5841eb253fe6e07a95b2c08d58b42086be80a1ee9c03b963d38b8bfd87a5c677"
+}

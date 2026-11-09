@@ -1,0 +1,112 @@
+96×96 사람 검출 네트워크
+student_kd | 13 Conv / 2 Upsample / 3 Concat | BN folding 후 90,094 parameters | 20.321M MACs/frame
+
+
+
+
+BACKBONE
+
+
+
+             input                               c1                                            c2                                        c3                                           c4                   context
+        Grayscale / INT8                 Conv 3×3 / s2 + ReLU                         Conv 3×3 / s2 + ReLU                      Conv 3×3 / s2 + ReLU                         Conv 3×3 / s2 + ReLU     Conv 3×3 / s1 + ReLU
+
+       1 × 96 × 96 (9,216)               12 × 48 × 48 (27,648)                       24 × 24 × 24 (13,824)                       32 × 12 × 12 (4,608)                         48 × 6 × 6 (1,728)       48 × 6 × 6 (1,728)
+
+
+
+
+                                                                                                                                                         c3 skip: 32×12×12
+
+                                                                 c2 skip: 24×24×24
+
+
+
+
+            fuse2                             concat2                                         up2                                      fuse1                                      concat1                    up1
+      Conv 3×3 / s1 + ReLU                 Channel concat                                  Nearest ×2                           Conv 3×3 / s1 + ReLU                           Channel concat              Nearest ×2
+
+      24 × 24 × 24 (13,824)              56 × 24 × 24 (32,256)                       32 × 24 × 24 (18,432)                       32 × 12 × 12 (4,608)                        80 × 12 × 12 (11,520)    48 × 12 × 12 (6,912)
+
+
+
+                                   DECODER / SKIP FUSION
+
+
+
+                                                                                                                                           DETECTION HEADS
+             head                       공유 feature: 24×24×24                             regression
+      Conv 3×3 / s1 + ReLU                                                            Conv 3×3 / s1 + ReLU
+
+      24 × 24 × 24 (13,824)                                                          24 × 24 × 24 (13,824)
+
+
+
+
+          heatmap                                                                           offset                                      size                                      quality                  output
+      Conv 1×1 / s1 / logits                                                          Conv 1×1 / s1 / logits                    Conv 1×1 / s1 / logits                       Conv 1×1 / s1 / logits     Channel concat
+
+        1 × 24 × 24 (576)                                                              2 × 24 × 24 (1,152)                       2 × 24 × 24 (1,152)                           1 × 24 × 24 (576)       6 × 24 × 24 (3,456)
+
+
+
+
+                                                                                     Channel order: heatmap, offset_x, offset_y, width, height, quality
+
+
+
+Shape = C×H×W, batch N=1; 괄호 안 숫자 = 원소 수. 파란색: 3×3 Conv+ReLU / 주황색: 1×1 logits head / 보라색: skip.
+RTL은 upsample/중간 concat을 주소 발생기로 처리한다. 후처리 sigmoid·좌표 decode·threshold·NMS는 학습 네트워크 밖이다.
+Convolution 레이어 상세 — BN folding 후 RTL 추론 기준
+입출력 shape는 NCHW. Weight shape는 OIHW. Bias는 INT32이며 첫 9개 블록의 BN 효과를 합친 값이다.
+
+
+
+
+         Layer                          Kernel / s / p                                Input NCHW                                        Output NCHW        Weight   Bias     MACs
+
+           c1                            3×3 / 2 / 1                                 1 × 1 × 96 × 96                                    1 × 12 × 48 × 48    108     12      248,832
+
+           c2                            3×3 / 2 / 1                                1 × 12 × 48 × 48                                    1 × 24 × 24 × 24   2,592    24     1,492,992
+
+           c3                            3×3 / 2 / 1                                1 × 24 × 24 × 24                                    1 × 32 × 12 × 12   6,912    32      995,328
+
+           c4                            3×3 / 2 / 1                                1 × 32 × 12 × 12                                     1 × 48 × 6 × 6    13,824   48      497,664
+
+        context                          3×3 / 1 / 1                                  1 × 48 × 6 × 6                                     1 × 48 × 6 × 6    20,736   48      746,496
+
+         fuse1                           3×3 / 1 / 1                                1 × 80 × 12 × 12                                    1 × 32 × 12 × 12   23,040   32     3,317,760
+
+         fuse2                           3×3 / 1 / 1                                1 × 56 × 24 × 24                                    1 × 24 × 24 × 24   12,096   24     6,967,296
+
+          head                           3×3 / 1 / 1                                1 × 24 × 24 × 24                                    1 × 24 × 24 × 24   5,184    24     2,985,984
+
+       regression                        3×3 / 1 / 1                                1 × 24 × 24 × 24                                    1 × 24 × 24 × 24   5,184    24     2,985,984
+
+        heatmap                          1×1 / 1 / 0                                1 × 24 × 24 × 24                                    1 × 1 × 24 × 24     24       1      13,824
+
+         offset                          1×1 / 1 / 0                                1 × 24 × 24 × 24                                    1 × 2 × 24 × 24     48       2      27,648
+
+          size                           1×1 / 1 / 0                                1 × 24 × 24 × 24                                    1 × 2 × 24 × 24     48       2      27,648
+
+         quality                         1×1 / 1 / 0                                1 × 24 × 24 × 24                                    1 × 1 × 24 × 24     24       1      13,824
+
+          합계                              13 Conv                                          —                                            6×24×24 logits     89,820   274    20,321,280
+
+
+
+
+모델 파라미터: Weight 89,820 + Bias 274 = 90,094개. 원본 학습형(BN 포함)의 trainable parameter는 90,362개다.
+
+입력: 1×1×96×96 grayscale INT8. 출력: 1×6×24×24 INT8 logits (3,456개). 1 MAC은 multiply-accumulate 1회다.
+
+INT8 weight/activation, INT32 bias/누산, INT64 재양자화 중간값. MACs는 padding 위치를 포함한 명목 연산 수다.
+
+현재 SRAM: input CDC 9,216 + activation 108,288 + weight 89,820 + bias 1,096 + multiplier 1,096 + descriptor 832 + post 9,984 = 220,332 bytes.
+
+현재 activation은 레이어별 주소를 분할한 큰 SRAM 하나다. 두 BANK 재사용 최적화는 아직 적용하지 않았다.
+
+Clock: DVP/render 27MHz, NPU/post 100MHz. 코어 40,965,537 clocks ≈409.655ms, 코어 처리율 상한 약2.441 FPS.
+
+상세 테이블·전체 연산·채널별 scale·SRAM 주소·출력 해석은 함께 제공한 Excel 파일에 있다.
+

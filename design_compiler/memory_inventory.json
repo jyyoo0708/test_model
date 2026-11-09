@@ -1,0 +1,50 @@
+{
+  "memory_bits": 1688928,
+  "logical_bytes": 211116,
+  "sram_macro_library_provided": false,
+  "full_attempt": "original behavioral RAM, standard-cell mapping attempted",
+  "memories": [
+    {
+      "hierarchy": "u_npu.activation_mem",
+      "depth": 108288,
+      "width": 8,
+      "bits": 866304
+    },
+    {
+      "hierarchy": "u_npu.weight_mem",
+      "depth": 89820,
+      "width": 8,
+      "bits": 718560
+    },
+    {
+      "hierarchy": "u_npu.bias_mem",
+      "depth": 274,
+      "width": 32,
+      "bits": 8768
+    },
+    {
+      "hierarchy": "u_npu.multiplier_mem",
+      "depth": 274,
+      "width": 32,
+      "bits": 8768
+    },
+    {
+      "hierarchy": "u_npu.descriptor_mem",
+      "depth": 208,
+      "width": 32,
+      "bits": 6656
+    },
+    {
+      "hierarchy": "u_post.lut_mem",
+      "depth": 1536,
+      "width": 16,
+      "bits": 24576
+    },
+    {
+      "hierarchy": "u_post.result_mem",
+      "depth": 3456,
+      "width": 16,
+      "bits": 55296
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "target": "person_detector_top original single-clock snapshot",
+  "tool": "Design Compiler I-2013.12-SP4",
+  "requested_clock_mhz": 27,
+  "license": "27000@uxftools",
+  "exit_code": 124,
+  "status": "ELABORATION_TIMEOUT",
+  "analyze_pass": true,
+  "elaboration_complete": false,
+  "mapped_compile_complete": false,
+  "clock_constraints_applied": false,
+  "elapsed_seconds": 1800.09,
+  "max_rss_kib": 1816244,
+  "mapped_netlist_generated": false,
+  "area_report_generated": false,
+  "timing_report_generated": false,
+  "console_log": "results/full_27mhz/console.log"
+}

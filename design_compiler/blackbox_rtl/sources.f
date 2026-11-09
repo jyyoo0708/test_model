@@ -1,0 +1,5 @@
+design_compiler/blackbox_rtl/npu_sram_bb.v
+design_compiler/blackbox_rtl/dvp_capture.v
+design_compiler/blackbox_rtl/npu_core.v
+design_compiler/blackbox_rtl/bbox_overlay.v
+design_compiler/blackbox_rtl/person_detector_top.v

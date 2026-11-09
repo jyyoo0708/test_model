@@ -1,0 +1,305 @@
+{
+  "layers": [
+    {
+      "name": "c1.0",
+      "shape": [
+        1,
+        12,
+        48,
+        48
+      ],
+      "bytes_int8": 27648,
+      "weights": 108,
+      "biases": 12,
+      "macs": 248832
+    },
+    {
+      "name": "c2.0",
+      "shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "bytes_int8": 13824,
+      "weights": 2592,
+      "biases": 24,
+      "macs": 1492992
+    },
+    {
+      "name": "c3.0",
+      "shape": [
+        1,
+        32,
+        12,
+        12
+      ],
+      "bytes_int8": 4608,
+      "weights": 6912,
+      "biases": 32,
+      "macs": 995328
+    },
+    {
+      "name": "c4.0",
+      "shape": [
+        1,
+        48,
+        6,
+        6
+      ],
+      "bytes_int8": 1728,
+      "weights": 13824,
+      "biases": 48,
+      "macs": 497664
+    },
+    {
+      "name": "context.0",
+      "shape": [
+        1,
+        48,
+        6,
+        6
+      ],
+      "bytes_int8": 1728,
+      "weights": 20736,
+      "biases": 48,
+      "macs": 746496
+    },
+    {
+      "name": "fuse1.0",
+      "shape": [
+        1,
+        32,
+        12,
+        12
+      ],
+      "bytes_int8": 4608,
+      "weights": 23040,
+      "biases": 32,
+      "macs": 3317760
+    },
+    {
+      "name": "fuse2.0",
+      "shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "bytes_int8": 13824,
+      "weights": 12096,
+      "biases": 24,
+      "macs": 6967296
+    },
+    {
+      "name": "head.0",
+      "shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "bytes_int8": 13824,
+      "weights": 5184,
+      "biases": 24,
+      "macs": 2985984
+    },
+    {
+      "name": "regression.0",
+      "shape": [
+        1,
+        24,
+        24,
+        24
+      ],
+      "bytes_int8": 13824,
+      "weights": 5184,
+      "biases": 24,
+      "macs": 2985984
+    },
+    {
+      "name": "heatmap",
+      "shape": [
+        1,
+        1,
+        24,
+        24
+      ],
+      "bytes_int8": 576,
+      "weights": 24,
+      "biases": 1,
+      "macs": 13824
+    },
+    {
+      "name": "offset",
+      "shape": [
+        1,
+        2,
+        24,
+        24
+      ],
+      "bytes_int8": 1152,
+      "weights": 48,
+      "biases": 2,
+      "macs": 27648
+    },
+    {
+      "name": "size",
+      "shape": [
+        1,
+        2,
+        24,
+        24
+      ],
+      "bytes_int8": 1152,
+      "weights": 48,
+      "biases": 2,
+      "macs": 27648
+    },
+    {
+      "name": "quality",
+      "shape": [
+        1,
+        1,
+        24,
+        24
+      ],
+      "bytes_int8": 576,
+      "weights": 24,
+      "biases": 1,
+      "macs": 13824
+    }
+  ],
+  "bank_bytes": 32256,
+  "activation_bytes": 64512,
+  "weights_int8": 89820,
+  "bias_int32": 1096,
+  "network_total_bytes": 155428,
+  "limit_bytes": 300000,
+  "proposal_limit_bytes": 175640,
+  "macs": 20321280,
+  "schedule": [
+    {
+      "stage": "c1",
+      "A": {
+        "input": 9216
+      },
+      "B": {
+        "c1": 27648
+      }
+    },
+    {
+      "stage": "c2",
+      "A": {
+        "c2_skip": 13824
+      },
+      "B": {
+        "c1": 27648
+      }
+    },
+    {
+      "stage": "c3",
+      "A": {
+        "c2_skip": 13824
+      },
+      "B": {
+        "c3_skip": 4608
+      }
+    },
+    {
+      "stage": "c4",
+      "A": {
+        "c2_skip": 13824,
+        "c4": 1728
+      },
+      "B": {
+        "c3_skip": 4608
+      }
+    },
+    {
+      "stage": "context",
+      "A": {
+        "c2_skip": 13824
+      },
+      "B": {
+        "c3_skip": 4608,
+        "context": 1728
+      }
+    },
+    {
+      "stage": "concat1",
+      "A": {
+        "c2_skip": 13824,
+        "concat1": 11520
+      },
+      "B": {
+        "c3_skip": 4608,
+        "context": 1728
+      }
+    },
+    {
+      "stage": "fuse1",
+      "A": {
+        "c2_skip": 13824,
+        "concat1": 11520
+      },
+      "B": {
+        "fuse1": 4608
+      }
+    },
+    {
+      "stage": "concat2",
+      "A": {
+        "c2_skip": 13824,
+        "fuse1_copy": 4608
+      },
+      "B": {
+        "concat2": 32256
+      }
+    },
+    {
+      "stage": "fuse2",
+      "A": {
+        "fuse2": 13824
+      },
+      "B": {
+        "concat2": 32256
+      }
+    },
+    {
+      "stage": "head",
+      "A": {
+        "fuse2": 13824
+      },
+      "B": {
+        "shared": 13824
+      }
+    },
+    {
+      "stage": "regression",
+      "A": {
+        "regression": 13824
+      },
+      "B": {
+        "shared": 13824
+      }
+    },
+    {
+      "stage": "outputs",
+      "A": {
+        "regression": 13824,
+        "packed_output": 3456
+      },
+      "B": {
+        "shared": 13824,
+        "head_scratch": 1152
+      }
+    }
+  ],
+  "assumptions": [
+    "Batch1 int8 activation/weight and int32 bias; float training/export.",
+    "Output stationary PE registers hold int32 partial sums; no partial-sum SRAM.",
+    "Explicit copies/free operations and direct upsample-to-concat writes; layer outputs reclaimed.",
+    "Requantization coefficients, alignment and postprocessing storage not yet specified; excluded."
+  ]
+}

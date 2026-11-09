@@ -1,0 +1,65 @@
+{
+  "run": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/advance_network/design_compiler/results/blackbox_dualclock_20261106_131129",
+  "compile_complete": true,
+  "compile_command": "compile",
+  "mapping_optimization_performed": true,
+  "tool": "Design Compiler I-2013.12-SP4",
+  "clocks_hz": {
+    "clk_pixel": 27000000,
+    "clk_npu": 100000000
+  },
+  "total_standard_cells": 82828,
+  "independent_area_um2": 86321.54700000002,
+  "reported_cell_area_um2": 86321.5459,
+  "sram_blackbox_instances": 8,
+  "excluded_sram_bytes": 220332,
+  "memory_area_included": false,
+  "memory_timing_model_included": false,
+  "sram_read_write_logic_budget_ns": {
+    "npu": 9.0,
+    "pixel_write": 36.0
+  },
+  "clock_relationship": "asynchronous",
+  "async_cross_domain_setup_hold_excluded": true,
+  "held_bbox_budget_ns": null,
+  "bbox_settling_audit": {
+    "separate_view": true,
+    "budget_ns": 20.0,
+    "worst_slack_ns": 18.23,
+    "implementation_constraint": false
+  },
+  "setup_groups": {
+    "clk_npu": {
+      "reported_paths": 10,
+      "worst_slack_ns": 4.81
+    },
+    "clk_pixel": {
+      "reported_paths": 10,
+      "worst_slack_ns": 29.45
+    },
+    "SRAM_READ_NPU": {
+      "reported_paths": 10,
+      "worst_slack_ns": 3.94
+    },
+    "SRAM_WRITE_NPU": {
+      "reported_paths": 10,
+      "worst_slack_ns": 3.48
+    },
+    "SRAM_WRITE_PIXEL": {
+      "reported_paths": 10,
+      "worst_slack_ns": 35.75
+    }
+  },
+  "worst_reported_hold_slack_ns": 0.0,
+  "setup_targets_met": true,
+  "netlist_sha256": "a889bbb1abd0889b64f1a388533e936fd2a27abf152b6b50367c8ed6e8a5e32a",
+  "memory_references": {
+    "npu_sram_bb_p_depth9216_p_data_w8_p_addr_w14": 1,
+    "npu_sram_bb_p_depth108288_p_data_w8_p_addr_w17": 1,
+    "npu_sram_bb_p_depth89820_p_data_w8_p_addr_w17": 1,
+    "npu_sram_bb_p_depth274_p_data_w32_p_addr_w9": 2,
+    "npu_sram_bb_p_depth208_p_data_w32_p_addr_w8": 1,
+    "npu_sram_bb_p_depth1536_p_data_w16_p_addr_w11": 1,
+    "npu_sram_bb_p_depth3456_p_data_w16_p_addr_w12": 1
+  }
+}

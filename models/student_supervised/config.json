@@ -1,0 +1,37 @@
+{
+  "stage": "student",
+  "epochs": 120,
+  "threads": 8,
+  "batch_size": 128,
+  "seed": 20261105,
+  "data": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/advance_network/data/processed/advanced_detection",
+  "output": "models/student_supervised",
+  "teacher": "models/teacher/best.pt",
+  "lr": 0.002,
+  "patience": 20,
+  "no_kd": true,
+  "width": 1,
+  "device": "cpu",
+  "precision": "float32",
+  "torch": "2.5.1+cpu",
+  "methods": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "model_selection": "highest validation AP50 on original CrowdHuman validation; MOT validation separately reported",
+  "loss": "center focal + .5 smoothL1 offset + 5 smoothL1 size + 3 DIoU + .5 quality BCE + ramped KD",
+  "kd": "GT-region heatmap MSE + quality-masked bbox L1 + normalized feature imitation; training-only 24->48 adapter",
+  "decode": "offset=2*sigmoid-.5; size=sigmoid; score=heat*sqrt(quality); peak3; NMS=.5; top50; width8 height24",
+  "source_sha256": {
+    "scripts/train_advanced.py": "995f454de3fc170c5881d2fce211dca5212a810233a154190a454ba5fa3bb062",
+    "models/advanced_model.py": "79b6c3e839403c73ac46bcb60e66de2c213637bdf8af6b24406f157ff1d4c72d",
+    "models/advanced_utils.py": "42fef1dae2d367f6b1b73b1a486b874f1d08e619a56eac3b10c4af10ae8b784d"
+  },
+  "data_config_sha256": "c217ce1dd242c4cd158e7b87de9f269344cbd38309135e21d1fc8f362bc90470",
+  "initial_student_weights_sha256": "c5ed20326628c994b986120cd5af7f0bd6aacf6e85fed51f6324bdb544621956",
+  "initial_torch_rng_sha256": "12cf058952feaa6f6015e773baa06b6f38163f2ea14d477e1a52d0803ca02ece",
+  "teacher_sha256": "0abe753e6d46255681c97c45039521e8af2a78a27db64af51ab30d6662489d8c"
+}

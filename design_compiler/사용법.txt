@@ -1,0 +1,26 @@
+dc 사용방법
+
+1. 디렉토리 생성후 run.source 파일 생성
+
+2. 상단에 Design compiler.txt 의 dc_shell command 입력. (DB 파일이 있는곳으로 path 수정)
+
+3. rtl path 맞춰서 run 파일 작성
+
+4. 터미널에서 mount  명령어 입력
+/tools/synopsys/scl/11.8/amd64/bin/lmgrd -c /tools/lic/license_syn.dat
+export SNPSLMD_LICENSE_FILE="27000@uxftools"
+
+5. dc_shell 입력 
+
+6. dc_shell>  이러한 상태가 되면 source run 입력
+ log 파일 따로 받으려면 source run > 20220420.out 과 같은 형태로 out 파일 생성
+
+7. 사용 후 license unmount
+/tools/synopsys/scl/11.8/amd64/bin/lmgrd -x lmdown
+
+
+//pragma protect
+//pragma protect begin
+//synopsys template
+
+//pragma protect end
