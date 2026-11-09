@@ -1,0 +1,1 @@
+{"clock_pixel_hz":27000000,"clock_npu_hz":100000000,"inference_post_cycles":40984296,"inference_post_seconds":0.409843,"npu_core_cycles":40965537,"input_copy_cycles":18432,"total_npu_cycles":41283776,"total_pixel_cycles":11146620,"reset_recovery_checked":true,"busy_frame_drop_checked":true}

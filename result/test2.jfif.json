@@ -1,0 +1,22 @@
+{
+  "input": "test2.jfif",
+  "input_image": "test2.jfif_input96.png",
+  "result_image": "test2.jfif_bbox96.png",
+  "image_size": [
+    96,
+    96
+  ],
+  "mode": "L",
+  "threshold": 0.325,
+  "person_present": true,
+  "count": 1,
+  "boxes_xyxy_score_96": [
+    [
+      38.69940185546875,
+      20.76190948486328,
+      55.468788146972656,
+      71.78968048095703,
+      0.45646828413009644
+    ]
+  ]
+}

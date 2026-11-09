@@ -1,0 +1,30 @@
+{
+  "image": "image/test1.jfif",
+  "npu_output_bytes_checked": 3456,
+  "boxes_xyxy_score_q16": [
+    [
+      57,
+      46,
+      75,
+      85,
+      23725
+    ]
+  ],
+  "red_border_pixels": 114,
+  "output_pixels_checked": 9216,
+  "threshold_q16": 21299,
+  "npu_sram_bytes": 210348,
+  "post_sram_bytes": 9984,
+  "total_sram_bytes": 220332,
+  "note": "Dual-clock RTL pixel27MHz/NPU100MHz; actual inference/decode/NMS/overlay, frozen parameters; following bypass frame. INT8 dataset accuracy not evaluated.",
+  "clock_pixel_hz": 27000000,
+  "clock_npu_hz": 100000000,
+  "inference_post_cycles": 40984186,
+  "inference_post_seconds": 0.409842,
+  "npu_core_cycles": 40965537,
+  "input_copy_cycles": 18432,
+  "total_npu_cycles": 41283669,
+  "total_pixel_cycles": 11146591,
+  "reset_recovery_checked": true,
+  "busy_frame_drop_checked": true
+}

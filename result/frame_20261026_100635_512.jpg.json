@@ -1,0 +1,22 @@
+{
+  "input": "frame_20261026_100635_512.jpg",
+  "input_image": "frame_20261026_100635_512.jpg_input96.png",
+  "result_image": "frame_20261026_100635_512.jpg_bbox96.png",
+  "image_size": [
+    96,
+    96
+  ],
+  "mode": "L",
+  "threshold": 0.325,
+  "person_present": true,
+  "count": 1,
+  "boxes_xyxy_score_96": [
+    [
+      56.0552978515625,
+      45.62025833129883,
+      69.76850128173828,
+      79.68782043457031,
+      0.3644121289253235
+    ]
+  ]
+}

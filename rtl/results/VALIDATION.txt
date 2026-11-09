@@ -1,0 +1,3 @@
+See DUALCLOCK_VALIDATION.md and dualclock_image_summary.json for final two-clock results.
+PASS12/12 images;41472 INT8 bytes and110592 RGB pixels; pixel27MHz/NPU100MHz.
+Original27MHz DC synthesis did not complete: elaboration timeout1800s,exit124.

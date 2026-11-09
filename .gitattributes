@@ -1,0 +1,2 @@
+# PPM simulation images contain binary pixel data.
+*.ppm binary

@@ -1,0 +1,7 @@
+{
+  "input": "frame_20261023_134306_888.jpg",
+  "person_present": false,
+  "threshold": 0.32500000000000007,
+  "boxes_xyxy_score_96": [],
+  "boxes_xyxy_score_original": []
+}

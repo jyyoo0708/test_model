@@ -1,0 +1,1 @@
+PASS dual-clock pipeline: 3456 NPU bytes, 1 boxes, reset recovery, busy ownership,27/100MHz CDC, sync/bypass/config; 40984186 inference+post NPU cycles

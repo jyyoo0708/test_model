@@ -1,0 +1,248 @@
+{
+  "model": "models/student_kd/model_float32.ts",
+  "threshold": 0.325,
+  "processed": 12,
+  "failed": 0,
+  "results": [
+    {
+      "input": "frame_20261021_085042_877.jpg",
+      "input_image": "frame_20261021_085042_877.jpg_input96.png",
+      "result_image": "frame_20261021_085042_877.jpg_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": true,
+      "count": 1,
+      "boxes_xyxy_score_96": [
+        [
+          29.045549392700195,
+          37.636436462402344,
+          48.605674743652344,
+          86.48535919189453,
+          0.4225142002105713
+        ]
+      ]
+    },
+    {
+      "input": "frame_20261021_085653_208.jpg",
+      "input_image": "frame_20261021_085653_208.jpg_input96.png",
+      "result_image": "frame_20261021_085653_208.jpg_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": true,
+      "count": 1,
+      "boxes_xyxy_score_96": [
+        [
+          42.13508605957031,
+          26.081222534179688,
+          60.50353240966797,
+          73.01517486572266,
+          0.35631367564201355
+        ]
+      ]
+    },
+    {
+      "input": "frame_20261021_091348_677.jpg",
+      "input_image": "frame_20261021_091348_677.jpg_input96.png",
+      "result_image": "frame_20261021_091348_677.jpg_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": true,
+      "count": 1,
+      "boxes_xyxy_score_96": [
+        [
+          33.092498779296875,
+          32.45854949951172,
+          53.65260314941406,
+          82.42218017578125,
+          0.5206036567687988
+        ]
+      ]
+    },
+    {
+      "input": "frame_20261021_113200_030.jpg",
+      "input_image": "frame_20261021_113200_030.jpg_input96.png",
+      "result_image": "frame_20261021_113200_030.jpg_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": false,
+      "count": 0,
+      "boxes_xyxy_score_96": []
+    },
+    {
+      "input": "frame_20261021_123336_503.jpg",
+      "input_image": "frame_20261021_123336_503.jpg_input96.png",
+      "result_image": "frame_20261021_123336_503.jpg_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": true,
+      "count": 2,
+      "boxes_xyxy_score_96": [
+        [
+          45.86127853393555,
+          7.633949279785156,
+          57.88075637817383,
+          44.100929260253906,
+          0.6092632412910461
+        ],
+        [
+          56.793827056884766,
+          7.077301025390625,
+          75.87986755371094,
+          56.830482482910156,
+          0.5052266120910645
+        ]
+      ]
+    },
+    {
+      "input": "frame_20261021_124417_138.jpg",
+      "input_image": "frame_20261021_124417_138.jpg_input96.png",
+      "result_image": "frame_20261021_124417_138.jpg_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": false,
+      "count": 0,
+      "boxes_xyxy_score_96": []
+    },
+    {
+      "input": "frame_20261021_125545_552.jpg",
+      "input_image": "frame_20261021_125545_552.jpg_input96.png",
+      "result_image": "frame_20261021_125545_552.jpg_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": true,
+      "count": 1,
+      "boxes_xyxy_score_96": [
+        [
+          50.80726623535156,
+          31.20855140686035,
+          72.08570098876953,
+          82.52458190917969,
+          0.5580403208732605
+        ]
+      ]
+    },
+    {
+      "input": "frame_20261023_113720_582.jpg",
+      "input_image": "frame_20261023_113720_582.jpg_input96.png",
+      "result_image": "frame_20261023_113720_582.jpg_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": false,
+      "count": 0,
+      "boxes_xyxy_score_96": []
+    },
+    {
+      "input": "frame_20261023_134306_888.jpg",
+      "input_image": "frame_20261023_134306_888.jpg_input96.png",
+      "result_image": "frame_20261023_134306_888.jpg_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": false,
+      "count": 0,
+      "boxes_xyxy_score_96": []
+    },
+    {
+      "input": "frame_20261026_100635_512.jpg",
+      "input_image": "frame_20261026_100635_512.jpg_input96.png",
+      "result_image": "frame_20261026_100635_512.jpg_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": true,
+      "count": 1,
+      "boxes_xyxy_score_96": [
+        [
+          56.0552978515625,
+          45.62025833129883,
+          69.76850128173828,
+          79.68782043457031,
+          0.3644121289253235
+        ]
+      ]
+    },
+    {
+      "input": "test1.jfif",
+      "input_image": "test1.jfif_input96.png",
+      "result_image": "test1.jfif_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": true,
+      "count": 1,
+      "boxes_xyxy_score_96": [
+        [
+          58.0357666015625,
+          45.99125671386719,
+          75.4857177734375,
+          85.48123168945312,
+          0.36460116505622864
+        ]
+      ]
+    },
+    {
+      "input": "test2.jfif",
+      "input_image": "test2.jfif_input96.png",
+      "result_image": "test2.jfif_bbox96.png",
+      "image_size": [
+        96,
+        96
+      ],
+      "mode": "L",
+      "threshold": 0.325,
+      "person_present": true,
+      "count": 1,
+      "boxes_xyxy_score_96": [
+        [
+          38.69940185546875,
+          20.76190948486328,
+          55.468788146972656,
+          71.78968048095703,
+          0.45646828413009644
+        ]
+      ]
+    }
+  ],
+  "errors": []
+}

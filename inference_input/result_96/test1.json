@@ -1,0 +1,49 @@
+{
+  "source": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/test_image/test1.jfif",
+  "source_oriented_size": [
+    1280,
+    1024
+  ],
+  "input": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/test_image/input_96/test1.png",
+  "result": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/test_image/result_96/test1.png",
+  "input_size": [
+    96,
+    96
+  ],
+  "input_mode": "L",
+  "result_size": [
+    96,
+    96
+  ],
+  "model": "/home/jinyoung/2026_TEACH_CNN/codex_opencode_loop/models/person_detector/run02/model_float32.ts",
+  "threshold": 0.32500000000000007,
+  "coordinate_format": "xyxy on 96x96 input; right/bottom exclusive",
+  "letterbox_transform": {
+    "scale_x": 0.075,
+    "scale_y": 0.0751953125,
+    "pad_left": 0,
+    "pad_top": 9
+  },
+  "person_present": true,
+  "count": 2,
+  "detections": [
+    {
+      "bbox_xyxy": [
+        8.514366149902344,
+        39.6876106262207,
+        26.86899185180664,
+        84.56796264648438
+      ],
+      "score": 0.3995535373687744
+    },
+    {
+      "bbox_xyxy": [
+        44.492584228515625,
+        37.647369384765625,
+        54.785179138183594,
+        63.87159729003906
+      ],
+      "score": 0.3269234895706177
+    }
+  ]
+}

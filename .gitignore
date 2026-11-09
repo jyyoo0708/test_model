@@ -65,3 +65,19 @@ obj_dir/
 /rtl/results/
 /design_compiler/results/
 /design_compiler/blackbox_rtl/verify/
+
+# Retain test inputs, report figures and recorded inference/validation results.
+!/image/
+!/image/**
+!/inference_input/
+!/inference_input/**
+!/report/**/
+!/report/**/*.jpg
+!/report/**/*.jpeg
+!/report/**/*.png
+!/result/
+!/result/**
+!/inference/results/
+!/inference/results/**
+!/rtl/results/
+!/rtl/results/**
