@@ -45,6 +45,9 @@ backups/
 *.safetensors
 *predictions*.jsonl
 
+# Include the deployment model so a fresh clone can run Float32 inference.
+!/models/student_kd/model_float32.ts
+
 # Images may include restricted dataset samples; keep them local
 *.jpg
 *.jpeg

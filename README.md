@@ -47,10 +47,26 @@
 저장소에는 코드, 설정, 문서, 성능 요약과 함께 테스트 입력(`image/`,
 `inference_input/`), 리포트 그림(`report/`), 추론 결과(`result/`,
 `inference/results/`), 기존 RTL 검증 결과(`rtl/results/`)를 포함한다.
-학습·검증 데이터셋, 모델 가중치와 TorchScript, 가상환경, 일반 로그, 백업,
+학습·검증 데이터셋, 학습 체크포인트, 가상환경, 일반 로그, 백업,
 빌드 및 합성 실행 디렉터리는 `.gitignore`로 제외하며 로컬 파일은 유지한다.
 문서에 표시된 백업·합성 실행 산출물 링크 중 일부는 로컬 작업 경로다.
-새로 clone한 뒤에는 가중치를 별도로 준비하거나 학습해야 추론할 수 있다.
+추론용 가중치를 포함한 `models/student_kd/model_float32.ts`는 Git 저장 대상이다.
+학습용 `.pt` 체크포인트는 별도로 준비하거나 학습해야 한다.
+
+다른 사람이 clone한 뒤 **이미지 추론만 실행**하려면 Python 3.10~3.12 환경에서
+프로젝트 루트로 이동해 다음 순서로 실행한다. 아래 고정 의존성은 Linux x86_64 CPU 환경 기준이다.
+학습 데이터셋 다운로드는 필요하지 않다.
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-inference.txt
+python3 infer.py --input image --output result --threshold 0.325
+```
+
+자신의 이미지는 `image/`에 넣거나 `--input`으로 파일·폴더를 지정한다.
+추론에는 `models/student_kd/model_float32.ts`, `inference/config.json`,
+저장소의 추론 코드와 위 Python 의존성이 필요하다. TorchScript에 학습된
+가중치와 네트워크가 포함되어 있어 별도 `best.pt` 파일은 필요하지 않다.
 
 ```bash
 python3 -m venv .venv

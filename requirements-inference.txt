@@ -1,0 +1,5 @@
+# Linux x86_64 CPU runtime, Python 3.10–3.12.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.5.1+cpu
+numpy==2.2.6
+Pillow==11.3.0
