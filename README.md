@@ -2,6 +2,40 @@
 
 96×96 grayscale 사람 검출 모델. 데이터·학습·추론 파일은 이 디렉토리 안에 둔다.
 
+## 네트워크 구조
+
+현재 추론에 사용하는 Student KD 모델(`AdvancedDetector(width=1)`) 기준이다.
+출력 크기는 `채널 × 높이 × 너비`이며 배치 크기는 1이다.
+`ConvBlock`은 학습 시 Conv2D → BatchNorm → ReLU로 구성하며, 추론 시 BatchNorm을 Conv2D에 folding한다.
+
+| 레이어 | 입력 | 연산 | 커널 / stride | 출력 크기 (C×H×W) |
+| --- | --- | --- | --- | --- |
+| input | grayscale 이미지 | 0~1 범위 float32 입력 | — | 1×96×96 |
+| c1 | input | ConvBlock | 3×3 / 2 | 12×48×48 |
+| c2 | c1 | ConvBlock | 3×3 / 2 | 24×24×24 |
+| c3 | c2 | ConvBlock | 3×3 / 2 | 32×12×12 |
+| c4 | c3 | ConvBlock | 3×3 / 2 | 48×6×6 |
+| context | c4 | ConvBlock | 3×3 / 1 | 48×6×6 |
+| up1 | context | Nearest upsample ×2 | — | 48×12×12 |
+| concat1 | up1, c3 | 채널 방향 결합 | — | 80×12×12 |
+| fuse1 | concat1 | ConvBlock | 3×3 / 1 | 32×12×12 |
+| up2 | fuse1 | Nearest upsample ×2 | — | 32×24×24 |
+| concat2 | up2, c2 | 채널 방향 결합 | — | 56×24×24 |
+| fuse2 | concat2 | ConvBlock | 3×3 / 1 | 24×24×24 |
+| head | fuse2 | ConvBlock | 3×3 / 1 | 24×24×24 |
+| regression | head | ConvBlock | 3×3 / 1 | 24×24×24 |
+| heatmap | head | Conv2D: 사람 중심 점수 logits | 1×1 / 1 | 1×24×24 |
+| offset | regression | Conv2D: 중심 위치 보정 logits (x, y) | 1×1 / 1 | 2×24×24 |
+| size | regression | Conv2D: 박스 크기 logits (w, h) | 1×1 / 1 | 2×24×24 |
+| quality | regression | Conv2D: 박스 품질 logits | 1×1 / 1 | 1×24×24 |
+| output | heatmap, offset, size, quality | 채널 방향 결합 | — | 6×24×24 |
+
+모든 3×3 Conv2D는 padding=1, 1×1 Conv2D는 padding=0이다.
+최종 출력 채널 순서는 `heatmap, offset_x, offset_y, width, height, quality`이며,
+출력 stride는 4이다. Conv2D는 총 13개, 연산량은 이미지당 20,321,280 MACs이다.
+구현은 [models/advanced_model.py](models/advanced_model.py),
+구조 그림은 [network_structure.png](report/network_structure/network_structure.png)를 참고한다.
+
 ## Git 저장 범위와 실행 준비
 
 저장소에는 코드, 설정, 문서, 성능 요약과 함께 테스트 입력(`image/`,
